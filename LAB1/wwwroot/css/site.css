@@ -1,15 +1,25 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
+    min-height: 100vh; /* Мінімальна висота body для використання всієї висоти екрану */
+    display: flex;
+    flex-direction: column; /* Встановлюємо вертикальну орієнтацію */
     background: silver;
     font-family: "Times New Roman", Verdana;
 }
 
+.container {
+    max-width: 100%;
+    overflow-x: auto; /* Дозволяє прокручувати контент, що виходить за межі екрану */
+    word-wrap: break-word; /* Переносить довгі рядки */
+}
+
 header {
-    width: 80%;
+    width: 100%;
     padding: 15px 10%;
     color: #fff;
     display: flex;
@@ -19,37 +29,64 @@ header {
     border-bottom: 2px solid #000;
 }
 
+    header .logo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     header .logo {
         font-weight: 600;
-        font-size: 25px;
+        font-size: 45px;
+        text-align: center;
+        width: 100%;
     }
 
-    header nav a {
-        color: #fff;
-        text-decoration: none;
-        margin-left: 15px;
+    header .logoa1 {
+        font-weight: 600;
+        font-size: 15px;
+        margin-top: 5px;
+        width: 100%;
+        text-align: center;
+        letter-spacing: 1.5px;
     }
 
-        header nav a:hover {
-            text-decoration: underline
+    header nav {
+        display: flex;
+        gap: 20px; /* Відстань між кнопками та логотипом */
+        margin-left: 20px;
+    }
+
+        header nav .button {
+            background-color: transparent; /* Прозорі кнопки */
+            border: 2px solid #fff; /* Контур кнопок */
+            color: #fff; /* Колір тексту */
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
         }
 
+            header nav .button:hover {
+                background-color: rgba(255, 255, 255, 0.2); /* Підсвічування кнопок при наведенні */
+                border-color: #007bff;
+            }
+
 main {
+    flex: 1; /* Дозволяє основному контенту займати весь доступний простір */
     width: 80%;
     padding: 15px 10%;
     margin: 50px 0;
 }
 
 footer {
-    margin-top: 150px;
     text-align: center;
     width: 100%;
     padding: 25px 0;
     color: #fff;
     background: #333;
     border-top: 2px solid #000;
-}
-
-.text-center {
-    text-align: center;
+    position: relative;
+    bottom: 0;
 }

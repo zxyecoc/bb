@@ -8,14 +8,24 @@
 </head>
 <body>
     <header>
-        <span class="logo">Курсова робота</span>
-        <nav> <p>Юзвак Дмитро</p></nav>
+        <div class="logo-container">
+            <span class="logo">Мангачит</span>
+            <p class="logoa1">Читай мангу українською</p>
+        </div>
+        <nav>
+            <a class="button" href="/">Головна</a>
+            <a class="button" href="/Mangas">Каталог</a>
+        </nav>
     </header>
+
     <main>
         @RenderBody()
     </main>
+
     <footer>
         <p>ІПЗ-22-1</p>
     </footer>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
