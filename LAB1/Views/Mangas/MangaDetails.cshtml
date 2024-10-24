@@ -1,0 +1,21 @@
+﻿@model LAB1.Models.Manga
+
+<div class="manga-details-container">
+    <div class="manga-cover-container">
+        <img src="@Model.CoverUrl" alt="@Model.Title" class="manga-cover" />
+    </div>
+
+    <div class="manga-info-container">
+        <h1>@Model.Title</h1>
+        <p><strong>Автор:</strong> @Model.Author</p>
+        <p><strong>Рік випуску:</strong> @Model.ReleaseYear</p>
+        <p><strong>Жанр:</strong> @Model.Genres</p>
+        <p><strong>Рейтинг:</strong> @Model.Rating</p>
+        <p><strong>Статус:</strong> @Model.Status</p>
+    </div>
+
+    <div class="manga-description">
+        <h2>Опис</h2>
+        <p>@Model.Description</p>
+    </div>
+</div>

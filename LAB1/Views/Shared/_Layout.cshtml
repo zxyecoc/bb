@@ -5,17 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - LAB1</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
 </head>
 <body>
     <header>
-        <div class="logo-container">
-            <span class="logo">Мангачит</span>
-            <p class="logoa1">Читай мангу українською</p>
+        <div class="header-container">
+            <a href="/" class="logo-container">
+                <span class="logo">Манґачит</span>
+                <p class="logoa1">Читай манґу українською</p>
+            </a>
+            <nav class="nav-buttons">
+                <a class="btn btn-custom" href="/">Головна</a>
+                <a class="btn btn-custom" href="/Catalog">Каталог манг</a>
+                <a class="btn btn-custom" href="/Mangas">Додати манґу</a>
+            </nav>
+
         </div>
-        <nav>
-            <a class="button" href="/">Головна</a>
-            <a class="button" href="/Mangas">Каталог</a>
-        </nav>
     </header>
 
     <main>

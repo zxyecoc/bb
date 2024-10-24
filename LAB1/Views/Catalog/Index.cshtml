@@ -1,0 +1,15 @@
+﻿@model IEnumerable<LAB1.Models.Manga>
+
+<h1>Каталог Манги</h1>
+
+<div class="manga-container">
+    @foreach (var manga in Model)
+    {
+        <div class="manga-item">
+            <a href="@Url.Action("MangaDetails", "Mangas", new { id = manga.Id })">
+                <img src="@manga.CoverUrl" alt="@manga.Title" class="manga-cover" />
+                <h2>@manga.Title</h2>
+            </a>
+        </div>
+    }
+</div>

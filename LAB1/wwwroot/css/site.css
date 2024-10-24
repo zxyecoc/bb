@@ -5,76 +5,22 @@
 }
 
 body {
-    min-height: 100vh; /* Мінімальна висота body для використання всієї висоти екрану */
+    min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Встановлюємо вертикальну орієнтацію */
-    background: silver;
+    flex-direction: column;
+    background-color: #212529; /* Новий колір фону */
     font-family: "Times New Roman", Verdana;
+
 }
 
 .container {
     max-width: 100%;
-    overflow-x: auto; /* Дозволяє прокручувати контент, що виходить за межі екрану */
-    word-wrap: break-word; /* Переносить довгі рядки */
+    overflow-x: auto;
+    word-wrap: break-word;
 }
-
-header {
-    width: 100%;
-    padding: 15px 10%;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #333;
-    border-bottom: 2px solid #000;
-}
-
-    header .logo-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    header .logo {
-        font-weight: 600;
-        font-size: 45px;
-        text-align: center;
-        width: 100%;
-    }
-
-    header .logoa1 {
-        font-weight: 600;
-        font-size: 15px;
-        margin-top: 5px;
-        width: 100%;
-        text-align: center;
-        letter-spacing: 1.5px;
-    }
-
-    header nav {
-        display: flex;
-        gap: 20px; /* Відстань між кнопками та логотипом */
-        margin-left: 20px;
-    }
-
-        header nav .button {
-            background-color: transparent; /* Прозорі кнопки */
-            border: 2px solid #fff; /* Контур кнопок */
-            color: #fff; /* Колір тексту */
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            text-align: center;
-        }
-
-            header nav .button:hover {
-                background-color: rgba(255, 255, 255, 0.2); /* Підсвічування кнопок при наведенні */
-                border-color: #007bff;
-            }
 
 main {
-    flex: 1; /* Дозволяє основному контенту займати весь доступний простір */
+    flex: 1;
     width: 80%;
     padding: 15px 10%;
     margin: 50px 0;
@@ -85,8 +31,124 @@ footer {
     width: 100%;
     padding: 25px 0;
     color: #fff;
-    background: #333;
+    background: #1f2225; /* Змінений колір для футера */
     border-top: 2px solid #000;
     position: relative;
     bottom: 0;
 }
+
+
+
+header {
+    padding: 10px 20px;
+    background-color: #2a2d30; /* Змінений колір для шапки */
+    color: white;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+
+.header-container {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+header .logo-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    text-decoration: none; /* Прибрати підкреслення */
+    color: white; /* Залишаємо білий колір для тексту */
+}
+
+
+    header .logo-container:visited,
+    header .logo-container:link {
+        text-decoration: none; /* Прибрати підкреслення при всіх станах */
+    }
+
+
+/* Оформлення для навігаційних кнопок */
+header .nav-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+header .btn-custom {
+    background-color: transparent;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    padding: 5px 15px;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+    header .btn-custom:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #007bff;
+    }
+
+    header .btn-custom:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+
+
+.manga-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+.manga-item {
+    flex: 1 0 18%;
+    box-sizing: border-box;
+    margin: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    text-align: center;
+    transition: transform 0.3s;
+    height: 350px; /* Фіксована висота для кожного блоку */
+}
+
+    .manga-item:hover {
+        transform: scale(1.05);
+    }
+
+.manga-cover {
+    width: 100%; /* Зображення займає всю ширину контейнера */
+    height: 250px; /* Фіксована висота для зображень */
+    object-fit: cover; /* Обрізає зображення, щоб вмістити у вказаний розмір */
+    border-radius: 5px; /* Закруглені кути зображення */
+}
+
+
+
+.manga-details-container {
+    display: flex; /* Використання Flexbox для розміщення елементів */
+    flex-wrap: nowrap; /* Без обгортання на новий рядок */
+}
+
+.manga-cover-container {
+    flex: 0 0 200px; /* Фіксована ширина для обкладинки манги */
+    margin-right: 20px; /* Відступ між обкладинкою та інформацією */
+}
+
+.manga-info-container {
+    flex: 1; /* Залишається простір для інформації */
+    margin-right: 20px; /* Відступ між інформацією та описом */
+}
+
+.manga-description {
+    flex: 1; /* Залишається простір для опису */
+}
+
+
+

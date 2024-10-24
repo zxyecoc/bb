@@ -159,5 +159,22 @@ namespace LAB1.Controllers
         {
           return (_context.Manga?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        // Метод MangaDetails для отримання конкретної манги по ID
+        public async Task<IActionResult> MangaDetails(int id)
+        {
+            // Отримуємо мангу з бази даних за ID
+            var manga = await _context.Manga.FirstOrDefaultAsync(m => m.Id == id);
+
+            // Якщо манга не знайдена, повертаємо помилку 404
+            if (manga == null)
+            {
+                return NotFound();
+            }
+
+            // Повертаємо представлення "MangaDetails" з моделлю манги
+            return View("MangaDetails", manga);
+        }
+
     }
 }
