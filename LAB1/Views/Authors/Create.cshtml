@@ -1,0 +1,52 @@
+﻿@model IEnumerable<LAB1.Models.Author>
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Додати автора</h1>
+
+<h4>Автор</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label for="name">Ім'я автора</label>
+                <input type="text" class="form-control" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Додати" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<h3 class="mt-5">Список авторів</h3>
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Ім'я</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var author in Model)
+        {
+            <tr>
+                <td>@author.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@author.Id" class="btn btn-secondary btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@author.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

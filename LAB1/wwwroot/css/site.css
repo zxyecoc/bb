@@ -150,5 +150,18 @@ header .btn-custom {
     flex: 1; /* Залишається простір для опису */
 }
 
+/* Initially hide the dropdown menu and set up transition */
+.dropdown-hover .dropdown-menu {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* When hovering, make the dropdown menu visible with fade-in effect */
+.dropdown-hover:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+}
 
 

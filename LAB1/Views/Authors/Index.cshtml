@@ -1,0 +1,40 @@
+﻿@model IEnumerable<LAB1.Models.Author>
+
+@{
+    ViewData["Title"] = "Authors Index";
+}
+
+<h1>Authors</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post">
+            <div class="form-group">
+                <label for="Name">Add New Author</label>
+                <input type="text" name="name" id="Name" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Add Author</button>
+        </form>
+    </div>
+</div>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var author in Model)
+        {
+            <tr>
+                <td>@author.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@author.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@author.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
