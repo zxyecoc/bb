@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using LAB1.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace LAB1.Data
 {
-    public class LAB1Context : DbContext
+    public class LAB1Context : IdentityDbContext<User>
     {
         public LAB1Context(DbContextOptions<LAB1Context> options)
             : base(options)
