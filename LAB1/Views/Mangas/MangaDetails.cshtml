@@ -18,4 +18,19 @@
         <h2>Опис</h2>
         <p>@Model.Description</p>
     </div>
+    <h3>Коментарі:</h3>
+    @foreach (var comment in Model.Comments)
+    {
+        <div>
+            <p><strong>@comment.User</strong> (@comment.CreatedAt):</p>
+            <p>@comment.Content</p>
+        </div>
+    }
+
+    <form asp-action="AddComment" asp-controller="Mangas" method="post">
+        <input type="hidden" name="mangaId" value="@Model.Id" />
+        <textarea name="content" required></textarea>
+        <button type="submit">Додати коментар</button>
+    </form>
+
 </div>

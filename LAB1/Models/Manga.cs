@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace LAB1.Models
 {
@@ -32,5 +33,8 @@ namespace LAB1.Models
         public string CoverUrl { get; set; } // URL обкладинки манги
 
         public string Status { get; set; } // Статус завершеності
+
+        // Колекція коментарів, пов'язаних з мангою
+        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

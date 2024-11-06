@@ -36,7 +36,7 @@ namespace LAB1.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("LAB1.Models.Manga", b =>
@@ -89,7 +89,7 @@ namespace LAB1.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Manga");
+                    b.ToTable("Manga", (string)null);
                 });
 
             modelBuilder.Entity("LAB1.Models.Tag", b =>
@@ -106,7 +106,7 @@ namespace LAB1.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("LAB1.Models.User", b =>

@@ -163,8 +163,10 @@ namespace LAB1.Controllers
         // Метод MangaDetails для отримання конкретної манги по ID
         public async Task<IActionResult> MangaDetails(int id)
         {
-            // Отримуємо мангу з бази даних за ID
-            var manga = await _context.Manga.FirstOrDefaultAsync(m => m.Id == id);
+            // Отримуємо мангу з бази даних за ID та завантажуємо пов'язані коментарі
+            var manga = await _context.Manga
+                .Include(m => m.Comments) // Завантаження коментарів
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             // Якщо манга не знайдена, повертаємо помилку 404
             if (manga == null)
@@ -174,6 +176,22 @@ namespace LAB1.Controllers
 
             // Повертаємо представлення "MangaDetails" з моделлю манги
             return View("MangaDetails", manga);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment(int mangaId, string content)
+        {
+            var comment = new Comment
+            {
+                Content = content,
+                User = User?.Identity?.Name ?? "Анонім",
+                MangaId = mangaId,
+                CreatedAt = DateTime.Now
+            };
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
         }
 
     }
