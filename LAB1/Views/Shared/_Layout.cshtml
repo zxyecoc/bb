@@ -32,12 +32,20 @@
                     </ul>
                 </div>
 
-
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <span class="navbar-text">Привіт, @User.Identity.Name!</span>
+                    <a class="btn btn-custom" asp-controller="User" asp-action="Logout">Вихід</a>
+                }
+                else
+                {
+                    <a class="btn btn-custom" asp-controller="User" asp-action="Login">Вхід</a>
+                    <a class="btn btn-custom" asp-controller="User" asp-action="Register">Реєстрація</a>
+                }
             </nav>
-
-
         </div>
     </header>
+
 
     <main>
         @RenderBody()

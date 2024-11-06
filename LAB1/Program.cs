@@ -10,9 +10,17 @@ builder.Services.AddDbContext<LAB1Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LAB1Context") ?? throw new InvalidOperationException("Connection string 'LAB1Context' not found.")));
 
 // Додаємо службу Identity для керування користувачами та ролями
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<LAB1Context>()
-    .AddDefaultTokenProviders();
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;            // Вимога наявності цифр
+    options.Password.RequiredLength = 6;             // Мінімальна довжина пароля
+    options.Password.RequireNonAlphanumeric = true;  // Вимога спеціальних символів
+    options.Password.RequireUppercase = true;        // Вимога великої літери
+    options.Password.RequireLowercase = true;        // Вимога малої літери
+})
+.AddEntityFrameworkStores<LAB1Context>()
+.AddDefaultTokenProviders();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
