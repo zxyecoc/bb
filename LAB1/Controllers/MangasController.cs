@@ -163,20 +163,24 @@ namespace LAB1.Controllers
         // Метод MangaDetails для отримання конкретної манги по ID
         public async Task<IActionResult> MangaDetails(int id)
         {
-            // Отримуємо мангу з бази даних за ID та завантажуємо пов'язані коментарі
             var manga = await _context.Manga
-                .Include(m => m.Comments) // Завантаження коментарів
+                .Include(m => m.Ratings)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            // Якщо манга не знайдена, повертаємо помилку 404
             if (manga == null)
             {
                 return NotFound();
             }
 
-            // Повертаємо представлення "MangaDetails" з моделлю манги
-            return View("MangaDetails", manga);
+            // Обчислення середнього рейтингу
+            double averageRating = manga.Ratings.Any() ? manga.Ratings.Average(r => r.UserRating) : 5;
+
+            // Передаємо середній рейтинг до View, додаємо в модель
+            manga.AverageRating = averageRating;
+
+            return View(manga);
         }
+
 
 
         [HttpPost]
@@ -193,6 +197,85 @@ namespace LAB1.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddRating(int mangaId, int ratingValue)
+        {
+            var userName = User.Identity.Name;
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Unauthorized(); // Якщо користувач не авторизований
+            }
+
+            // Перевірка, чи вже існує рейтинг для цієї манги від цього користувача
+            var existingRating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.MangaId == mangaId && r.UserName == userName);
+
+            if (existingRating != null)
+            {
+                // Оновлюємо рейтинг, якщо він уже є
+                existingRating.UserRating = ratingValue;
+                existingRating.CreatedAt = DateTime.Now;
+                _context.Ratings.Update(existingRating); // Оновлюємо рейтинг у базі
+            }
+            else
+            {
+                // Якщо рейтингу ще немає, додаємо новий
+                var newRating = new Rating
+                {
+                    MangaId = mangaId,
+                    UserName = userName,
+                    UserRating = ratingValue,
+                    CreatedAt = DateTime.Now
+                };
+                _context.Ratings.Add(newRating); // Додаємо новий рейтинг
+            }
+
+            await _context.SaveChangesAsync(); // Зберігаємо зміни в базі даних
+
+            // Обчислення середнього рейтингу
+            var manga = await _context.Manga
+                .Include(m => m.Ratings) // Завантажуємо всі рейтинги цієї манги
+                .FirstOrDefaultAsync(m => m.Id == mangaId);
+
+            double averageRating = 5; // За замовчуванням середній рейтинг = 5
+
+            if (manga != null && manga.Ratings.Any())
+            {
+                averageRating = manga.Ratings.Average(r => r.UserRating); // Обчислення середнього рейтингу
+            }
+
+            ViewData["AverageRating"] = averageRating; // Зберігаємо середній рейтинг в ViewData
+
+            return RedirectToAction("MangaDetails", new { id = mangaId }); // Перенаправляємо на сторінку з деталями манги
+        }
+
+
+
+
+
+
+
+        //        private async Task UpdateMangaAverageRating(int mangaId)
+        //        {
+        //             var ratings = await _context.Ratings
+        //            .Where(r => r.MangaId == mangaId)
+        //            .Select(r => r.UserRating)
+        //            .ToListAsync();
+
+        //             if (ratings.Count > 0)
+        //                {
+        //                    var averageRating = ratings.Average();
+        //                    var manga = await _context.Manga.FindAsync(mangaId);
+        //                     if (manga != null)
+        //                     {
+        //                        manga.Ratings = averageRating;
+        //                        await _context.SaveChangesAsync();
+        //                     }
+        //                }
+        //}
+
+
 
     }
 }

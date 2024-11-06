@@ -1,4 +1,4 @@
-﻿@model LAB1.Models.Manga
+﻿@model Manga
 
 <div class="manga-details-container">
     <div class="manga-cover-container">
@@ -10,7 +10,6 @@
         <p><strong>Автор:</strong> @Model.Author</p>
         <p><strong>Рік випуску:</strong> @Model.ReleaseYear</p>
         <p><strong>Жанр:</strong> @Model.Genres</p>
-        <p><strong>Рейтинг:</strong> @Model.Rating</p>
         <p><strong>Статус:</strong> @Model.Status</p>
     </div>
 
@@ -32,5 +31,32 @@
         <textarea name="content" required></textarea>
         <button type="submit">Додати коментар</button>
     </form>
+
+
+
+<form asp-action="AddRating" method="post">
+    <input type="hidden" name="mangaId" value="@Model.Id" />
+    <label for="rating">Rating:</label>
+    <select name="ratingValue" id="rating">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+    </select>
+    <button type="submit">Submit Rating</button>
+</form>
+
+<div>
+        <strong>Average Rating:</strong> @Model.AverageRating
+</div>
+
+
+
 
 </div>

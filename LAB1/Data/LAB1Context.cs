@@ -23,6 +23,8 @@ namespace LAB1.Data
         // Зміна назви Tag на Tags
         public DbSet<Tag> Tags { get; set; } = default!;
         public DbSet<Comment> Comments { get; set; } = default!;
+        public DbSet<Rating> Ratings { get; set; } = default!;
+
 
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LAB1.Models
 {
@@ -17,9 +16,6 @@ namespace LAB1.Models
         [Required]
         public string Genres { get; set; } // Жанри
 
-        [Range(1, 10)]
-        public double Rating { get; set; } // Рейтинг
-
         public string Description { get; set; } // Опис манги
 
         public string Author { get; set; } // Автор
@@ -34,7 +30,10 @@ namespace LAB1.Models
 
         public string Status { get; set; } // Статус завершеності
 
-        // Колекція коментарів, пов'язаних з мангою
         public List<Comment> Comments { get; set; } = new List<Comment>();
+
+        public ICollection<Rating> Ratings { get; set; }
+        public double AverageRating { get; set; }
+
     }
 }
