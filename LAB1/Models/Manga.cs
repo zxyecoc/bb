@@ -20,10 +20,10 @@ namespace LAB1.Models
         public string Description { get; set; } // Опис манги
 
         public int AuthorId { get; set; } // Зовнішній ключ
-
         [ValidateNever]public Author Author { get; set; } // Навігаційна властивість
 
-        public string Illustrator { get; set; } // Ілюстратор
+        public int IllustratorId { get; set; } // Зовнішній ключ
+        [ValidateNever]public Author Illustrator { get; set; } // Ілюстратор
 
         public int Volumes { get; set; } // Кількість томів
 

@@ -40,9 +40,11 @@
                 <span asp-validation-for="AuthorId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Illustrator" class="control-label"></label>
-                <input asp-for="Illustrator" class="form-control" />
-                <span asp-validation-for="Illustrator" class="text-danger"></span>
+                <label asp-for="IllustratorId" class="control-label">Ілюстратор</label>
+                <select asp-for="IllustratorId" class="form-control" asp-items="ViewBag.Illustrators">
+                    <option value="">Оберіть ілюстратора</option>
+                </select>
+                <span asp-validation-for="IllustratorId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Volumes" class="control-label"></label>

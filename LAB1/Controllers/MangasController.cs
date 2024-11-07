@@ -23,7 +23,7 @@ namespace LAB1.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Manga != null ? 
-                          View(await _context.Manga.Include(a=>a.Author).ToListAsync()) :
+                          View(await _context.Manga.Include(a=>a.Author).Include(i=>i.Illustrator).ToListAsync()) :
                           Problem("Entity set 'LAB1Context.Manga'  is null.");
         }
 
@@ -51,6 +51,7 @@ namespace LAB1.Controllers
         public IActionResult Create()
         {
             ViewBag.Authors = new SelectList(_context.Authors, "Id", "Name");
+            ViewBag.Illustrators = new SelectList(_context.Authors, "Id", "Name");
             return View();
         }
 
@@ -59,7 +60,7 @@ namespace LAB1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,Genres,Rating,Description,AuthorId,Illustrator,Volumes,Chapters,CoverUrl,Status")] Manga manga)
+        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,Genres,Rating,Description,AuthorId,IllustratorId,Volumes,Chapters,CoverUrl,Status")] Manga manga)
         {
             if (ModelState.IsValid)
             {
@@ -68,6 +69,7 @@ namespace LAB1.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Authors = new SelectList(_context.Authors, "Id", "Name", manga.AuthorId);
+            ViewBag.Illustrators = new SelectList(_context.Authors, "Id", "Name", manga.IllustratorId);
             return View(manga);
         }
 
