@@ -164,4 +164,111 @@ header .btn-custom {
     visibility: visible;
 }
 
+.manga-details-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.manga-cover-info-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.manga-cover-container {
+    margin-bottom: 15px;
+}
+
+.manga-cover {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.manga-info {
+    margin-top: 15px;
+}
+
+    .manga-info h1 {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+
+    .manga-info p {
+        font-size: 1em;
+        margin: 5px 0;
+    }
+
+
+.manga-details-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Ліва секція */
+.manga-cover-info-section {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.manga-cover-container {
+    margin-bottom: 15px;
+}
+
+.manga-cover {
+    width: 100%;
+    max-width: 250px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.manga-info {
+    margin-top: 10px;
+}
+
+/* Права секція */
+.manga-description-comments-section {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+}
+
+.rating-button-container {
+    align-self: flex-end;
+    margin-bottom: 10px;
+}
+
+.manga-description {
+    margin-bottom: 20px;
+}
+
+.add-comment-container {
+    margin-bottom: 20px;
+}
+
+.comments-section {
+    margin-top: 10px;
+}
+
+.comment {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+
+
 

@@ -1,62 +1,80 @@
 ﻿@model Manga
 
 <div class="manga-details-container">
-    <div class="manga-cover-container">
-        <img src="@Model.CoverUrl" alt="@Model.Title" class="manga-cover" />
-    </div>
-
-    <div class="manga-info-container">
-        <h1>@Model.Title</h1>
-        <p><strong>Автор:</strong> @Model.Author</p>
-        <p><strong>Рік випуску:</strong> @Model.ReleaseYear</p>
-        <p><strong>Жанр:</strong> @Model.Genres</p>
-        <p><strong>Статус:</strong> @Model.Status</p>
-    </div>
-
-    <div class="manga-description">
-        <h2>Опис</h2>
-        <p>@Model.Description</p>
-    </div>
-    <h3>Коментарі:</h3>
-    @foreach (var comment in Model.Comments)
-    {
-        <div>
-            <p><strong>@comment.User</strong> (@comment.CreatedAt):</p>
-            <p>@comment.Content</p>
+    <!-- Ліва секція з обкладинкою та основною інформацією -->
+    <div class="manga-cover-info-section">
+        <div class="manga-cover-container">
+            <img src="@Model.CoverUrl" alt="@Model.Title" class="manga-cover" />
         </div>
-    }
+        <div class="manga-info">
+            <h1>@Model.Title</h1>
+            <p><strong>Рік випуску:</strong> @Model.ReleaseYear</p>
+            <p><strong>Автор:</strong> @Model.Author</p>
+            <p><strong>Ілюстратор:</strong> @Model.Illustrator</p>
+            <p><strong>Статус:</strong> @Model.Status</p>
+        </div>
+    </div>
 
-    <form asp-action="AddComment" asp-controller="Mangas" method="post">
-        <input type="hidden" name="mangaId" value="@Model.Id" />
-        <textarea name="content" required></textarea>
-        <button type="submit">Додати коментар</button>
-    </form>
+    <!-- Права секція з описом, кнопкою додати рейтинг, коментарями та кнопкою додати коментар -->
+    <div class="manga-description-comments-section">
+        <!-- Кнопка для додавання рейтингу -->
+        <div class="rating-button-container">
+            <form asp-action="AddRating" method="post">
+                <input type="hidden" name="mangaId" value="@Model.Id" />
+                <label for="rating">Додати рейтинг:</label>
+                <select name="ratingValue" id="rating">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <button type="submit">Підтвердити рейтинг</button>
+            </form>
+        </div>
+        <div>
+            <strong>Average Rating:</strong> @Model.AverageRating
+        </div>
 
+        <!-- Опис манги -->
+        <div class="manga-description">
+            <h2>Опис</h2>
+            <p>@Model.Description</p>
+        </div>
 
+        <!-- Кнопка додати коментар -->
+        <div class="add-comment-container">
+            <form asp-action="AddComment" asp-controller="Mangas" method="post">
+                <input type="hidden" name="mangaId" value="@Model.Id" />
+                <textarea name="content" required placeholder="Напишіть свій коментар"></textarea>
+                <button type="submit">Додати коментар</button>
+            </form>
+        </div>
 
-<form asp-action="AddRating" method="post">
-    <input type="hidden" name="mangaId" value="@Model.Id" />
-    <label for="rating">Rating:</label>
-    <select name="ratingValue" id="rating">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-    </select>
-    <button type="submit">Submit Rating</button>
-</form>
-
-<div>
-        <strong>Average Rating:</strong> @Model.AverageRating
+        <!-- Коментарі -->
+        <div class="comments-section">
+            <h3>Коментарі:</h3>
+            @if (Model.Comments != null && Model.Comments.Any())
+            {
+                foreach (var comment in Model.Comments)
+                {
+                    <div class="comment">
+                        <p><strong>@comment.User</strong> (@comment.CreatedAt):</p>
+                        <p>@comment.Content</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Коментарів поки що немає.</p>
+            }
+        </div>
+    </div>
 </div>
-
-
-
 
 </div>

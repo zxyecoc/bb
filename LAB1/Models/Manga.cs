@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace LAB1.Models
 {
@@ -18,7 +19,9 @@ namespace LAB1.Models
 
         public string Description { get; set; } // Опис манги
 
-        public string Author { get; set; } // Автор
+        public int AuthorId { get; set; } // Зовнішній ключ
+
+        [ValidateNever]public Author Author { get; set; } // Навігаційна властивість
 
         public string Illustrator { get; set; } // Ілюстратор
 
@@ -32,8 +35,8 @@ namespace LAB1.Models
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
 
-        public ICollection<Rating> Ratings { get; set; }
-        public double AverageRating { get; set; }
+        public ICollection<Rating>? Ratings { get; set; }
+        public double? AverageRating { get; set; }
 
     }
 }

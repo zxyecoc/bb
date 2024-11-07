@@ -4,6 +4,7 @@ using LAB1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LAB1.Migrations
 {
     [DbContext(typeof(LAB1Context))]
-    partial class LAB1ContextModelSnapshot : ModelSnapshot
+    [Migration("20241106230912_create")]
+    partial class create
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,10 +79,11 @@ namespace LAB1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("AverageRating")
+                    b.Property<double>("AverageRating")
                         .HasColumnType("float");
 
                     b.Property<int>("Chapters")
@@ -116,8 +120,6 @@ namespace LAB1.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
 
                     b.ToTable("Manga");
                 });
@@ -374,17 +376,6 @@ namespace LAB1.Migrations
                         .IsRequired();
 
                     b.Navigation("Manga");
-                });
-
-            modelBuilder.Entity("LAB1.Models.Manga", b =>
-                {
-                    b.HasOne("LAB1.Models.Author", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
                 });
 
             modelBuilder.Entity("LAB1.Models.Rating", b =>

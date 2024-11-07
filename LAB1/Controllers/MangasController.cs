@@ -23,7 +23,7 @@ namespace LAB1.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Manga != null ? 
-                          View(await _context.Manga.ToListAsync()) :
+                          View(await _context.Manga.Include(a=>a.Author).ToListAsync()) :
                           Problem("Entity set 'LAB1Context.Manga'  is null.");
         }
 
@@ -36,7 +36,9 @@ namespace LAB1.Controllers
             }
 
             var manga = await _context.Manga
-                .FirstOrDefaultAsync(m => m.Id == id);
+         .Include(m => m.Comments)
+         .ThenInclude(c => c.User) // Щоб відображати ім'я користувача
+         .FirstOrDefaultAsync(m => m.Id == id);
             if (manga == null)
             {
                 return NotFound();
@@ -48,6 +50,7 @@ namespace LAB1.Controllers
         // GET: Mangas/Create
         public IActionResult Create()
         {
+            ViewBag.Authors = new SelectList(_context.Authors, "Id", "Name");
             return View();
         }
 
@@ -56,7 +59,7 @@ namespace LAB1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,Genres,Rating,Description,Author,Illustrator,Volumes,Chapters,CoverUrl,Status")] Manga manga)
+        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,Genres,Rating,Description,AuthorId,Illustrator,Volumes,Chapters,CoverUrl,Status")] Manga manga)
         {
             if (ModelState.IsValid)
             {
@@ -64,6 +67,7 @@ namespace LAB1.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Authors = new SelectList(_context.Authors, "Id", "Name", manga.AuthorId);
             return View(manga);
         }
 
@@ -80,6 +84,8 @@ namespace LAB1.Controllers
             {
                 return NotFound();
             }
+            ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name", manga.AuthorId);
+
             return View(manga);
         }
 
@@ -115,6 +121,8 @@ namespace LAB1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name", manga.AuthorId);
+
             return View(manga);
         }
 
@@ -165,6 +173,7 @@ namespace LAB1.Controllers
         {
             var manga = await _context.Manga
                 .Include(m => m.Ratings)
+                .Include(m => m.Comments) // Завантажуємо коментарі разом із мангою
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (manga == null)
@@ -183,6 +192,7 @@ namespace LAB1.Controllers
 
 
 
+
         [HttpPost]
         public async Task<IActionResult> AddComment(int mangaId, string content)
         {
@@ -193,10 +203,14 @@ namespace LAB1.Controllers
                 MangaId = mangaId,
                 CreatedAt = DateTime.Now
             };
+
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
+
+            // Повертаємося на сторінку деталей манги після додавання коментаря
             return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddRating(int mangaId, int ratingValue)
