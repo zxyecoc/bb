@@ -31,7 +31,7 @@ namespace LAB1.Models
 
         public string CoverUrl { get; set; } // URL обкладинки манги
 
-        public string Status { get; set; } // Статус завершеності
+        public bool Status { get; set; } // True - завершено, False - продовжується
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
 

@@ -117,8 +117,37 @@ header .btn-custom {
     text-align: center;
     transition: transform 0.3s;
     height: 350px; /* Фіксована висота для кожного блоку */
+    overflow: hidden;
 }
 
+    .manga-item h3 {
+        font-size: 6px; /* Менший розмір тексту */
+        font-weight: bold;
+        color: #000; /* Чорний колір тексту */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 5px 0;
+    }
+
+    .manga-item p {
+        font-size: 6px; /* Менший розмір тексту */
+        color: #000; /* Чорний колір тексту */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 5px 0;
+    }
+
+    .manga-item a {
+        text-decoration: none; /* Вимкнення підкреслення для посилань */
+        color: #000; /* Чорний колір посилань */
+        font-size: 6px; /* Менший розмір тексту для посилань */
+    }
+
+        .manga-item a:hover {
+            color: #007bff; /* Зміна кольору тексту при наведенні */
+        }
 
     .manga-item:hover {
         transform: scale(1.05);

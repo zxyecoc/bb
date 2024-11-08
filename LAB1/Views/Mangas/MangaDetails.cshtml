@@ -11,32 +11,39 @@
             <p><strong>Рік випуску:</strong> @Model.ReleaseYear</p>
             <p><strong>Автор:</strong> @Model.Author.Name</p>
             <p><strong>Ілюстратор:</strong> @Model.Illustrator.Name</p>
-            <p><strong>Статус:</strong> @Model.Status</p>
+            <p><strong>Статус:</strong> @(Model.Status ? "Завершено" : "Продовжується")</p>
         </div>
     </div>
 
     <!-- Права секція з описом, кнопкою додати рейтинг, коментарями та кнопкою додати коментар -->
     <div class="manga-description-comments-section">
         <!-- Кнопка для додавання рейтингу -->
-        <div class="rating-button-container">
-            <form asp-action="AddRating" method="post">
-                <input type="hidden" name="mangaId" value="@Model.Id" />
-                <label for="rating">Додати рейтинг:</label>
-                <select name="ratingValue" id="rating">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                </select>
-                <button type="submit">Підтвердити рейтинг</button>
-            </form>
-        </div>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="rating-button-container">
+                <form asp-action="AddRating" method="post">
+                    <input type="hidden" name="mangaId" value="@Model.Id" />
+                    <label for="rating">Додати рейтинг:</label>
+                    <select name="ratingValue" id="rating">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <button type="submit">Підтвердити рейтинг</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <p>Тільки авторизовані користувачі можуть додавати рейтинг.</p>
+        }
         <div>
             <strong>Average Rating:</strong> @Model.AverageRating
         </div>

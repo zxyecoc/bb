@@ -20,6 +20,7 @@
             <th>Illustrator</th>
             <th>@Html.DisplayNameFor(model => model.Volumes)</th>
             <th>@Html.DisplayNameFor(model => model.Chapters)</th>
+            <th>Status</th>
             <th></th>
         </tr>
     </thead>
@@ -42,6 +43,7 @@
                 <td>@Html.DisplayFor(modelItem => item.Illustrator.Name)</td>
                 <td>@Html.DisplayFor(modelItem => item.Volumes)</td>
                 <td>@Html.DisplayFor(modelItem => item.Chapters)</td>
+                <td>@(item.Status ? "Завершено" : "Продовжується")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

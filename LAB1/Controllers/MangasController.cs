@@ -94,22 +94,36 @@ namespace LAB1.Controllers
                 return NotFound();
             }
 
-            var manga = await _context.Manga.FindAsync(id);
+            var manga = await _context.Manga
+                .Include(m => m.Tags) // Завантажуємо пов'язані теги
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (manga == null)
             {
                 return NotFound();
             }
+
+            // Завантажуємо список авторів та ілюстраторів
             ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name", manga.AuthorId);
+            ViewData["Illustrators"] = new SelectList(_context.Authors, "Id", "Name", manga.IllustratorId);
+
+            // Завантажуємо список всіх тегів
+            var allTags = await _context.Tags.ToListAsync();
+            ViewBag.Tags = allTags;
+
+            // Вибрані теги
+            ViewBag.SelectedTags = manga.Tags.Select(t => t.Id).ToList();
 
             return View(manga);
         }
+
 
         // POST: Mangas/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseYear,Genres,Rating,Description,Author,Illustrator,Volumes,Chapters,CoverUrl,Status")] Manga manga)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseYear,Genres,Rating,Description,AuthorId,IllustratorId,Volumes,Chapters,CoverUrl,Status")] Manga manga, int[] selectedTags)
         {
             if (id != manga.Id)
             {
@@ -120,8 +134,31 @@ namespace LAB1.Controllers
             {
                 try
                 {
+                    // Оновлюємо мангу
                     _context.Update(manga);
-                    await _context.SaveChangesAsync();
+
+                    // Завантажуємо поточну мангу з тегами
+                    var existingManga = await _context.Manga
+                        .Include(m => m.Tags)
+                        .FirstOrDefaultAsync(m => m.Id == id);
+
+                    if (existingManga != null)
+                    {
+                        // Видаляємо старі теги
+                        existingManga.Tags.Clear();
+
+                        // Додаємо нові вибрані теги
+                        foreach (var tagId in selectedTags)
+                        {
+                            var tag = await _context.Tags.FindAsync(tagId);
+                            if (tag != null)
+                            {
+                                existingManga.Tags.Add(tag);
+                            }
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -136,10 +173,16 @@ namespace LAB1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            // Повторно завантажуємо списки у разі помилки
             ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name", manga.AuthorId);
+            ViewData["Illustrators"] = new SelectList(_context.Authors, "Id", "Name", manga.IllustratorId);
+            ViewBag.Tags = await _context.Tags.ToListAsync();
+            ViewBag.SelectedTags = selectedTags;
 
             return View(manga);
         }
+
 
         // GET: Mangas/Delete/5
         public async Task<IActionResult> Delete(int? id)
