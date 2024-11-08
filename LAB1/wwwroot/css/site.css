@@ -101,14 +101,15 @@ header .btn-custom {
 .manga-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 20px;
+    justify-content: flex-start; /* Вирівнювання блоків на початок */
+    gap: 20px; /* Відстань між блоками */
+    padding: 20px;
 }
 
 .manga-item {
-    flex: 1 0 18%;
+    width: 200px; /* Фіксована ширина блоку */
     box-sizing: border-box;
-    margin: 10px;
+    margin: 10px 0;
     padding: 10px;
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -117,6 +118,7 @@ header .btn-custom {
     transition: transform 0.3s;
     height: 350px; /* Фіксована висота для кожного блоку */
 }
+
 
     .manga-item:hover {
         transform: scale(1.05);

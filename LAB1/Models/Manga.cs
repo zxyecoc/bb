@@ -13,9 +13,9 @@ namespace LAB1.Models
 
         [Required]
         public int ReleaseYear { get; set; } // Рік виходу
-
+        
         [Required]
-        public string Genres { get; set; } // Жанри
+        [ValidateNever]public string Genres { get; set; } = "Unknown"; // Жанри
 
         public string Description { get; set; } // Опис манги
 
@@ -37,6 +37,9 @@ namespace LAB1.Models
 
         public ICollection<Rating>? Ratings { get; set; }
         public double? AverageRating { get; set; }
+
+        public ICollection<Tag> Tags { get; set; } = new List<Tag>(); // Зв'язок з тегами
+
 
     }
 }

@@ -23,7 +23,7 @@ namespace LAB1.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Manga != null ? 
-                          View(await _context.Manga.Include(a=>a.Author).Include(i=>i.Illustrator).ToListAsync()) :
+                          View(await _context.Manga.Include(t=>t.Tags).Include(a=>a.Author).Include(i=>i.Illustrator).ToListAsync()) :
                           Problem("Entity set 'LAB1Context.Manga'  is null.");
         }
 
@@ -52,6 +52,7 @@ namespace LAB1.Controllers
         {
             ViewBag.Authors = new SelectList(_context.Authors, "Id", "Name");
             ViewBag.Illustrators = new SelectList(_context.Authors, "Id", "Name");
+            ViewBag.Tags = _context.Tags.ToList(); // Передаємо список тегів
             return View();
         }
 
@@ -60,16 +61,28 @@ namespace LAB1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,Genres,Rating,Description,AuthorId,IllustratorId,Volumes,Chapters,CoverUrl,Status")] Manga manga)
+        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseYear,Genres,Rating,Description,AuthorId,IllustratorId,Volumes,Chapters,CoverUrl,Status")] Manga manga, int[] selectedTags)
         {
             if (ModelState.IsValid)
             {
+                if (selectedTags != null)
+                {
+                    foreach (var tagId in selectedTags)
+                    {
+                        var tag = await _context.Tags.FindAsync(tagId);
+                        if (tag != null)
+                        {
+                            manga.Tags.Add(tag);
+                        }
+                    }
+                }
                 _context.Add(manga);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Authors = new SelectList(_context.Authors, "Id", "Name", manga.AuthorId);
             ViewBag.Illustrators = new SelectList(_context.Authors, "Id", "Name", manga.IllustratorId);
+            ViewBag.Tags = _context.Tags.ToList();
             return View(manga);
         }
 
@@ -174,6 +187,9 @@ namespace LAB1.Controllers
         public async Task<IActionResult> MangaDetails(int id)
         {
             var manga = await _context.Manga
+                .Include(a => a.Author)
+                .Include(i => i.Illustrator)
+                .Include(t => t.Tags)
                 .Include(m => m.Ratings)
                 .Include(m => m.Comments) // Завантажуємо коментарі разом із мангою
                 .FirstOrDefaultAsync(m => m.Id == id);

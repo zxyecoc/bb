@@ -23,9 +23,14 @@
                 <span asp-validation-for="ReleaseYear" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Genres" class="control-label"></label>
-                <input asp-for="Genres" class="form-control" />
-                <span asp-validation-for="Genres" class="text-danger"></span>
+                <label>Tags</label><br />
+                @foreach (var tag in ViewBag.Tags as List<LAB1.Models.Tag>)
+                {
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" name="selectedTags" value="@tag.Id" class="form-check-input" />
+                        <label class="form-check-label">@tag.Name</label>
+                    </div>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>

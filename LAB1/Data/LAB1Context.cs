@@ -19,6 +19,10 @@ namespace LAB1.Data
 
         // Зміна назви Author на Authors
         public DbSet<Author> Authors { get; set; } = default!;
+        // Зміна назви Tag на Tags
+        public DbSet<Tag> Tags { get; set; } = default!;
+        public DbSet<Comment> Comments { get; set; } = default!;
+        public DbSet<Rating> Ratings { get; set; } = default!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -36,13 +40,12 @@ namespace LAB1.Data
                 .WithMany()
                 .HasForeignKey(m => m.IllustratorId)
                 .OnDelete(DeleteBehavior.Restrict); // Використовуємо обмеження для ілюстратора
+
+            modelBuilder.Entity<Manga>()
+            .HasMany(m => m.Tags)
+            .WithMany(t => t.Mangas)
+            .UsingEntity(j => j.ToTable("MangaTags")); // Створення зв'язуючої таблиці
         }
-
-
-        // Зміна назви Tag на Tags
-        public DbSet<Tag> Tags { get; set; } = default!;
-        public DbSet<Comment> Comments { get; set; } = default!;
-        public DbSet<Rating> Ratings { get; set; } = default!;
 
     }
     
