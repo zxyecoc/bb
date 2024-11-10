@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,29 +8,35 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </head>
 <body>
     <header>
         <div class="header-container">
-            <a href="/" class="logo-container">
-                <span class="logo">Манґачит</span>
-                <p class="logoa1">Читай манґу українською</p>
-            </a>
-            <nav class="nav-buttons">
+            <!-- Ліва частина шапки (логотип та кнопки Головна і Каталог) -->
+            <nav class="nav-buttons-left">
+                <a href="/" class="logo-container">
+                    <span class="logo">Манґачит</span>
+                    <p class="logoa1">Читай манґу українською</p>
+                </a>
                 <a class="btn btn-custom" href="/">Головна</a>
                 <a class="btn btn-custom" href="/Catalog">Каталог манг</a>
-                <div class="btn-group dropdown-hover">
-                    <button type="button" class="btn btn-custom dropdown-toggle">
-                        Додати
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/Mangas">Додати манґу</a></li>
-                        <li><a class="dropdown-item" href="/Authors/Index">Додати автора</a></li>
-                        <li><a class="dropdown-item" href="/Tags/Index">Додати теги</a></li>
-                    </ul>
-                </div>
+            </nav>
 
+            <!-- Права частина шапки (кнопки Вхід, Реєстрація, Вихід, Привіт, User, Додати для Адміністратора) -->
+            <nav class="nav-buttons-right">
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <div class="btn-group dropdown-hover">
+                        <button type="button" class="btn btn-custom dropdown-toggle">
+                            Додати
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Mangas">Додати манґу</a></li>
+                            <li><a class="dropdown-item" href="/Authors/Index">Додати автора</a></li>
+                            <li><a class="dropdown-item" href="/Tags/Index">Додати теги</a></li>
+                        </ul>
+                    </div>
+                }
                 @if (User.Identity.IsAuthenticated)
                 {
                     <span class="navbar-text">Привіт, @User.Identity.Name!</span>
@@ -45,7 +50,6 @@
             </nav>
         </div>
     </header>
-
 
     <main>
         @RenderBody()

@@ -38,6 +38,7 @@ footer {
 
 
 
+/* Загальний стиль шапки */
 header {
     padding: 10px 20px;
     background-color: #2a2d30; /* Змінений колір для шапки */
@@ -47,34 +48,28 @@ header {
     align-items: center;
 }
 
-
+/* Контейнер для шапки, вирівнювання елементів */
 .header-container {
     display: flex;
-    align-items: center;
-    gap: 30px;
+    justify-content: space-between; /* Вирівнювання елементів по боках */
+    width: 100%;
 }
 
-header .logo-container {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    text-decoration: none; /* Прибрати підкреслення */
-    color: white; /* Залишаємо білий колір для тексту */
-}
-
-
-    header .logo-container:visited,
-    header .logo-container:link {
-        text-decoration: none; /* Прибрати підкреслення при всіх станах */
-    }
-
-
-/* Оформлення для навігаційних кнопок */
-header .nav-buttons {
+/* Ліва частина шапки (логотип та кнопки) */
+.nav-buttons-left {
     display: flex;
     gap: 15px;
+    align-items: center; /* Для вирівнювання тексту та кнопок */
 }
 
+/* Права частина шапки (Вхід, Реєстрація, Привіт та інші) */
+.nav-buttons-right {
+    display: flex;
+    gap: 15px;
+    align-items: center; /* Для вирівнювання тексту привітання з кнопками */
+}
+
+/* Стиль для кнопок */
 header .btn-custom {
     background-color: transparent;
     color: #fff;
@@ -94,6 +89,21 @@ header .btn-custom {
         outline: none;
         box-shadow: none;
     }
+
+/* Стилі для логотипа */
+header .logo-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    text-decoration: none; /* Прибрати підкреслення */
+    color: white; /* Залишаємо білий колір для тексту */
+}
+
+    header .logo-container:visited,
+    header .logo-container:link {
+        text-decoration: none; /* Прибрати підкреслення при всіх станах */
+    }
+
 
 
 
