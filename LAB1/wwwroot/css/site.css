@@ -8,22 +8,21 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #212529; /* Новий колір фону */
+    background-color: #212529;
     font-family: "Times New Roman", Verdana;
-
+    color: #fff;
 }
 
 .container {
     max-width: 100%;
-    overflow-x: auto;
-    word-wrap: break-word;
+    overflow-x: hidden;
 }
 
 main {
     flex: 1;
-    width: 80%;
-    padding: 15px 10%;
-    margin: 50px 0;
+    width: 90%;
+    padding: 20px;
+    margin: 50px auto;
 }
 
 footer {
@@ -31,7 +30,7 @@ footer {
     width: 100%;
     padding: 25px 0;
     color: #fff;
-    background: #1f2225; /* Змінений колір для футера */
+    background: #1f2225;
     border-top: 2px solid #000;
     position: relative;
     bottom: 0;
@@ -98,60 +97,50 @@ header .btn-custom {
 
 
 
-.manga-container {
+.catalog-container {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start; /* Вирівнювання блоків на початок */
-    gap: 20px; /* Відстань між блоками */
+    gap: 20px;
     padding: 20px;
+    align-items: flex-start; /* Вирівнюємо контент по верху */
+}
+
+.manga-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 манги в ряд */
+    gap: 20px;
 }
 
 .manga-item {
-    width: 200px; /* Фіксована ширина блоку */
-    box-sizing: border-box;
-    margin: 10px 0;
     padding: 10px;
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 5px;
     text-align: center;
     transition: transform 0.3s;
-    height: 350px; /* Фіксована висота для кожного блоку */
+    height: 400px;
     overflow: hidden;
 }
 
-    .manga-item h3 {
-        font-size: 6px; /* Менший розмір тексту */
-        font-weight: bold;
-        color: #000; /* Чорний колір тексту */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        margin: 5px 0;
-    }
+.manga-link {
+    text-decoration: none;
+    color: #343a40;
+    font-size: 18px;
+}
 
-    .manga-item p {
-        font-size: 6px; /* Менший розмір тексту */
-        color: #000; /* Чорний колір тексту */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        margin: 5px 0;
-    }
+.filter-panel {
+    width: 300px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    position: sticky; /* Використовуємо position: sticky */
+    top: 20px; /* Відстань від верху сторінки */
+    flex-shrink: 0;
+    color: #343a40;
+}
 
-    .manga-item a {
-        text-decoration: none; /* Вимкнення підкреслення для посилань */
-        color: #000; /* Чорний колір посилань */
-        font-size: 6px; /* Менший розмір тексту для посилань */
-    }
 
-        .manga-item a:hover {
-            color: #007bff; /* Зміна кольору тексту при наведенні */
-        }
-
-    .manga-item:hover {
-        transform: scale(1.05);
-    }
 
 .manga-cover {
     width: 100%; /* Зображення займає всю ширину контейнера */
@@ -159,8 +148,6 @@ header .btn-custom {
     object-fit: cover; /* Обрізає зображення, щоб вмістити у вказаний розмір */
     border-radius: 5px; /* Закруглені кути зображення */
 }
-
-
 
 .manga-details-container {
     display: flex; /* Використання Flexbox для розміщення елементів */

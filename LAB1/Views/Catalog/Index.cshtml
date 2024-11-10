@@ -2,14 +2,82 @@
 
 <h1>Каталог Манги</h1>
 
-<div class="manga-container">
-    @foreach (var manga in Model)
-    {
-        <div class="manga-item">
-            <a href="@Url.Action("MangaDetails", "Mangas", new { id = manga.Id })">
-                <img src="@manga.CoverUrl" alt="@manga.Title" class="manga-cover" />
-                <h2>@manga.Title</h2>
-            </a>
-        </div>
-    }
+<div class="catalog-container">
+
+    <!-- Контейнер з мангами -->
+    <div class="manga-container">
+        @foreach (var manga in Model)
+        {
+            <div class="manga-item">
+                <a href="@Url.Action("MangaDetails", "Mangas", new { id = manga.Id })" class="manga-link">
+                    <img src="@manga.CoverUrl" alt="@manga.Title" class="manga-cover" />
+                    <h3>@manga.Title</h3>
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Панель фільтрації -->
+    <div class="filter-panel">
+        <h3>Фільтрація</h3>
+        <form asp-action="Index" method="get">
+            <!-- Фільтр за тегами -->
+            <div class="form-group">
+                <label>Теги:</label><br />
+                @foreach (var tag in ViewBag.Tags as List<LAB1.Models.Tag>)
+                {
+                    <div class="form-check">
+                        <input type="checkbox" name="selectedTags" value="@tag.Id" class="form-check-input" />
+                        <label class="form-check-label">@tag.Name</label>
+                    </div>
+                }
+            </div>
+
+            <!-- Фільтр за автором -->
+            <div class="form-group">
+                <label>Автор:</label>
+                <select name="authorId" class="form-control">
+                    <option value="">Усі автори</option>
+                    @foreach (var author in ViewBag.Authors as List<LAB1.Models.Author>)
+                    {
+                        <option value="@author.Id">@author.Name</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Фільтр за ілюстратором -->
+            <div class="form-group">
+                <label>Ілюстратор:</label>
+                <select name="illustratorId" class="form-control">
+                    <option value="">Усі ілюстратори</option>
+                    @foreach (var illustrator in ViewBag.Authors as List<LAB1.Models.Author>)
+                    {
+                        <option value="@illustrator.Id">@illustrator.Name</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Сортування -->
+            <h3>Сортування</h3>
+            <div class="form-group">
+                <label>Сортувати за:</label>
+                <select name="sortOrder" class="form-control">
+                    <option value="title">Назва</option>
+                    <option value="year">Рік випуску</option>
+                    <option value="rating">Рейтинг</option>
+                    <option value="chapters">Кількість розділів</option>
+                </select>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Застосувати</button>
+                <a href="@Url.Action("Index", "Catalog")" class="btn btn-secondary">Скинути</a>
+            </div>
+        </form>
+    </div>
+
 </div>
+
+
+
