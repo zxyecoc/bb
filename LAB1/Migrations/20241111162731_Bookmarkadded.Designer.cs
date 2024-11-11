@@ -4,6 +4,7 @@ using LAB1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LAB1.Migrations
 {
     [DbContext(typeof(LAB1Context))]
-    partial class LAB1ContextModelSnapshot : ModelSnapshot
+    [Migration("20241111162731_Bookmarkadded")]
+    partial class Bookmarkadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,14 +88,9 @@ namespace LAB1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("userId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MangaId");
-
-                    b.HasIndex("userId");
 
                     b.ToTable("Comments");
                 });
@@ -436,13 +434,7 @@ namespace LAB1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LAB1.Models.User", "user")
-                        .WithMany()
-                        .HasForeignKey("userId");
-
                     b.Navigation("Manga");
-
-                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("LAB1.Models.Manga", b =>

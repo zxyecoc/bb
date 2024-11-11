@@ -3,18 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using LAB1.Models;
 using Microsoft.AspNetCore.Authorization; // Залежно від розташування вашої моделі User
-using LAB1.Resources; // Простір імен для ресурсів
+using LAB1.Resources;
+using SQLitePCL; // Простір імен для ресурсів
+using LAB1.Data;
+using LAB1.Models;
+using Microsoft.EntityFrameworkCore;
+
 
 
 public class UserController : Controller
 {
+    private readonly LAB1Context _context;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
 
-    public UserController(UserManager<User> userManager, SignInManager<User> signInManager)
+    public UserController(LAB1Context context, UserManager<User> userManager, SignInManager<User> signInManager)
     {
+        _context = context;  // Додаємо ініціалізацію контексту
         _userManager = userManager;
         _signInManager = signInManager;
+
     }
 
     [HttpGet]
@@ -105,13 +113,48 @@ public class UserController : Controller
             roles = new List<string> { "Читач" };
         }
 
+        // Отримуємо закладки користувача
+        var bookmarks = await _context.Bookmarks
+            .Where(b => b.UserId == user.Id)
+            .Include(b => b.Manga)
+            .ToListAsync();
+        if (bookmarks == null)
+        {
+            return NotFound();
+        }    
         var model = new UserProfileViewModel
         {
             UserName = user.UserName,
             Email = user.Email,
-            Roles = string.Join(", ", roles.Select(role => RoleTranslations.ResourceManager.GetString(role) ?? role))
+            Roles = string.Join(", ", roles.Select(role => RoleTranslations.ResourceManager.GetString(role) ?? role)),
+            Bookmarks = bookmarks // Передаємо закладки до представлення
         };
+
 
         return View(model);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveBookmark(int bookmarkId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound("Користувача не знайдено");
+        }
+
+        var bookmark = await _context.Bookmarks
+            .FirstOrDefaultAsync(b => b.Id == bookmarkId && b.UserId == user.Id);
+
+        if (bookmark == null)
+        {
+            return NotFound("Закладку не знайдено");
+        }
+
+        _context.Bookmarks.Remove(bookmark);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Profile", "User"); // Після видалення перенаправляємо на профіль
+    }
+
 }

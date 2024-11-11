@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LAB1.Data;
 using LAB1.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.Elfie.Model.Structures;
 
 namespace LAB1.Controllers
 {
     public class MangasController : Controller
     {
         private readonly LAB1Context _context;
+        private readonly UserManager<User> _userManager;
 
-        public MangasController(LAB1Context context)
+        public MangasController(LAB1Context context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Mangas
@@ -36,16 +40,18 @@ namespace LAB1.Controllers
             }
 
             var manga = await _context.Manga
-         .Include(m => m.Comments)
-         .ThenInclude(c => c.User) // Щоб відображати ім'я користувача
-         .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(m => m.Comments)            // Завантажуємо коментарі манги
+                .ThenInclude(c => c.User)            // Завантажуємо користувачів, що залишили коментарі
+                .FirstOrDefaultAsync(m => m.Id == id);  // Знаходимо мангу за ID
+
             if (manga == null)
             {
                 return NotFound();
             }
 
-            return View(manga);
+            return View(manga);  // Передаємо мангу до виду
         }
+
 
         // GET: Mangas/Create
         public IActionResult Create()
@@ -229,12 +235,13 @@ namespace LAB1.Controllers
         // Метод MangaDetails для отримання конкретної манги по ID
         public async Task<IActionResult> MangaDetails(int id)
         {
+            // Завантажуємо мангу за її id
             var manga = await _context.Manga
                 .Include(a => a.Author)
                 .Include(i => i.Illustrator)
                 .Include(t => t.Tags)
                 .Include(m => m.Ratings)
-                .Include(m => m.Comments) // Завантажуємо коментарі разом із мангою
+                .Include(m => m.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (manga == null)
@@ -244,14 +251,35 @@ namespace LAB1.Controllers
 
             // Обчислення середнього рейтингу
             double averageRating = manga.Ratings.Any() ? manga.Ratings.Average(r => r.UserRating) : 5;
-
-            // Передаємо середній рейтинг до View, додаємо в модель
             manga.AverageRating = averageRating;
 
-            return View(manga);
+            // Отримуємо поточного користувача
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                // Якщо користувач не автентифікований, передаємо лише мангу без інформації про закладки
+                var model1 = new MangaDetailsViewModel
+                {
+                    Manga = manga,
+                    IsBookmarked = false // Якщо користувач не автентифікований, закладка не існує
+                };
+
+                return View(model1); // Повертаємо ViewModel
+            }
+
+            // Перевірка на існування закладки для користувача
+            var existingBookmark = await _context.Bookmarks
+                .FirstOrDefaultAsync(b => b.MangaId == manga.Id && b.UserId == user.Id);
+
+            // Створюємо ViewModel і передаємо необхідні дані
+            var model = new MangaDetailsViewModel
+            {
+                Manga = manga,
+                IsBookmarked = existingBookmark != null // Перевіряємо, чи є закладка
+            };
+
+            return View(model); // Повертаємо ViewModel
         }
-
-
 
 
         [HttpPost]
@@ -325,32 +353,38 @@ namespace LAB1.Controllers
             return RedirectToAction("MangaDetails", new { id = mangaId }); // Перенаправляємо на сторінку з деталями манги
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddBookmark(int mangaId)
+        {
+            // Отримуємо поточного користувача
+            var user = await _userManager.GetUserAsync(User);
 
+            // Перевірка на існування манги
+            var manga = await _context.Manga.FirstOrDefaultAsync(m => m.Id == mangaId);
+            if (manga == null)
+            {
+                return NotFound();
+            }
 
+            // Перевірка, чи вже є закладка для цього користувача
+            var existingBookmark = await _context.Bookmarks
+                .FirstOrDefaultAsync(b => b.UserId == user.Id && b.MangaId == mangaId);
 
+            if (existingBookmark == null)
+            {
+                // Створюємо нову закладку
+                var bookmark = new Bookmark
+                {
+                    UserId = user.Id,
+                    MangaId = mangaId
+                };
 
+                _context.Bookmarks.Add(bookmark);
+                await _context.SaveChangesAsync();
+            }
 
-
-        //        private async Task UpdateMangaAverageRating(int mangaId)
-        //        {
-        //             var ratings = await _context.Ratings
-        //            .Where(r => r.MangaId == mangaId)
-        //            .Select(r => r.UserRating)
-        //            .ToListAsync();
-
-        //             if (ratings.Count > 0)
-        //                {
-        //                    var averageRating = ratings.Average();
-        //                    var manga = await _context.Manga.FindAsync(mangaId);
-        //                     if (manga != null)
-        //                     {
-        //                        manga.Ratings = averageRating;
-        //                        await _context.SaveChangesAsync();
-        //                     }
-        //                }
-        //}
-
-
+            return RedirectToAction("Profile", "User"); // Перенаправлення на сторінку користувача
+        }
 
     }
 }

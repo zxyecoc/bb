@@ -7,3 +7,29 @@
     <p>Електронна пошта: @Model.Email</p>
     <span>Ролі: @Model.Roles</span>
 </div>
+
+<h4>Мої закладки</h4>
+@if (Model.Bookmarks != null && Model.Bookmarks.Any())
+{
+    <div class="row">
+        @foreach (var bookmark in Model.Bookmarks)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <img src="@bookmark.Manga.CoverUrl" alt="@bookmark.Manga.Title" class="card-img-top" />
+                    <div class="card-body">
+                        <h5 class="card-title">@bookmark.Manga.Title</h5>
+                        <!-- Кнопка для видалення закладки -->
+                        <form method="post" asp-action="RemoveBookmark" asp-route-bookmarkId="@bookmark.Id">
+                            <button type="submit" class="btn btn-danger">Видалити закладку</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>У вас немає закладок.</p>
+}

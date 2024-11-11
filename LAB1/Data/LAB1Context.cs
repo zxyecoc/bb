@@ -23,6 +23,8 @@ namespace LAB1.Data
         public DbSet<Tag> Tags { get; set; } = default!;
         public DbSet<Comment> Comments { get; set; } = default!;
         public DbSet<Rating> Ratings { get; set; } = default!;
+        public DbSet<Bookmark> Bookmarks { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

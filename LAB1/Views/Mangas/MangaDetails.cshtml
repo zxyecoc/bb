@@ -1,18 +1,31 @@
-﻿@model Manga
+﻿@model MangaDetailsViewModel
 
 <div class="manga-details-container">
     <!-- Ліва секція з обкладинкою та основною інформацією -->
     <div class="manga-cover-info-section">
         <div class="manga-cover-container">
-            <img src="@Model.CoverUrl" alt="@Model.Title" class="manga-cover" />
+            <img src="@Model.Manga.CoverUrl" alt="@Model.Manga.Title" class="manga-cover" />
         </div>
         <div class="manga-info">
-            <h1>@Model.Title</h1>
-            <p><strong>Рік випуску:</strong> @Model.ReleaseYear</p>
-            <p><strong>Автор:</strong> @Model.Author.Name</p>
-            <p><strong>Ілюстратор:</strong> @Model.Illustrator.Name</p>
-            <p><strong>Статус:</strong> @(Model.Status ? "Завершено" : "Продовжується")</p>
+            <h1>@Model.Manga.Title</h1>
+            <p><strong>Рік випуску:</strong> @Model.Manga.ReleaseYear</p>
+            <p><strong>Автор:</strong> @Model.Manga.Author.Name</p>
+            <p><strong>Ілюстратор:</strong> @Model.Manga.Illustrator.Name</p>
+            <p><strong>Статус:</strong> @(Model.Manga.Status ? "Завершено" : "Продовжується")</p>
         </div>
+        @if (User.Identity.IsAuthenticated)
+        {
+            @if (@Model.IsBookmarked)
+            {
+                <p class="text-success">Додано в закладки</p>
+            }
+            else
+            {
+                <form method="post" asp-action="AddBookmark" asp-route-mangaId="@Model.Manga.Id">
+                    <button type="submit" class="btn btn-primary">Додати до закладок</button>
+                </form>
+            }
+        }
     </div>
 
     <!-- Права секція з описом, кнопкою додати рейтинг, коментарями та кнопкою додати коментар -->
@@ -22,7 +35,7 @@
         {
             <div class="rating-button-container">
                 <form asp-action="AddRating" method="post">
-                    <input type="hidden" name="mangaId" value="@Model.Id" />
+                    <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
                     <label for="rating">Додати рейтинг:</label>
                     <select name="ratingValue" id="rating">
                         <option value="1">1</option>
@@ -45,19 +58,19 @@
             <p>Тільки авторизовані користувачі можуть додавати рейтинг.</p>
         }
         <div>
-            <strong>Average Rating:</strong> @Model.AverageRating
+            <strong>Average Rating:</strong> @Model.Manga.AverageRating
         </div>
 
         <!-- Опис манги -->
         <div class="manga-description">
             <h2>Опис</h2>
-            <p>@Model.Description</p>
+            <p>@Model.Manga.Description</p>
         </div>
 
         <!-- Кнопка додати коментар -->
         <div class="add-comment-container">
             <form asp-action="AddComment" asp-controller="Mangas" method="post">
-                <input type="hidden" name="mangaId" value="@Model.Id" />
+                <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
                 <textarea name="content" required placeholder="Напишіть свій коментар"></textarea>
                 <button type="submit">Додати коментар</button>
             </form>
@@ -66,9 +79,9 @@
         <!-- Коментарі -->
         <div class="comments-section">
             <h3>Коментарі:</h3>
-            @if (Model.Comments != null && Model.Comments.Any())
+            @if (Model.Manga.Comments != null && Model.Manga.Comments.Any())
             {
-                foreach (var comment in Model.Comments)
+                foreach (var comment in Model.Manga.Comments)
                 {
                     <div class="comment">
                         <p><strong>@comment.User</strong> (@comment.CreatedAt):</p>

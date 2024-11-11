@@ -7,7 +7,9 @@ using LAB1.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<LAB1Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("LAB1Context") ?? throw new InvalidOperationException("Connection string 'LAB1Context' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LAB1Context") ?? throw new InvalidOperationException("Connection string 'LAB1Context' not found."))
+     .EnableSensitiveDataLogging()
+    );
 
 // Додаємо службу Identity для керування користувачами та ролями
 builder.Services.AddIdentity<User, IdentityRole>(options =>
