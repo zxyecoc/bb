@@ -20,11 +20,15 @@
                 </a>
                 <a class="btn btn-custom" href="/">Головна</a>
                 <a class="btn btn-custom" href="/Catalog">Каталог манг</a>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
+                {
+                    <a class="btn btn-custom" href="/Admin/Users">Користувачі</a>
+                }
             </nav>
 
             <!-- Права частина шапки (кнопки Вхід, Реєстрація, Вихід, Привіт, User, Додати для Адміністратора) -->
             <nav class="nav-buttons-right">
-                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
                 {
                     <div class="btn-group dropdown-hover">
                         <button type="button" class="btn btn-custom dropdown-toggle">
@@ -39,7 +43,7 @@
                 }
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <span class="navbar-text">Привіт, @User.Identity.Name!</span>
+                    <a class="btn btn-custom" href="/User/Profile">@User.Identity.Name</a>
                     <a class="btn btn-custom" asp-controller="User" asp-action="Logout">Вихід</a>
                 }
                 else

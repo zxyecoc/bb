@@ -1,0 +1,60 @@
+﻿@model IEnumerable<LAB1.Models.UserRoleViewModel>
+
+<h2>Список користувачів</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ім'я користувача</th>
+            <th>Електронна пошта</th>
+            <th>Ролі</th>
+            <th>Дія</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>
+                    @foreach (var role in user.Roles)
+                    {
+                        <span>@role</span>
+                    }
+                </td>
+                <td>
+                    <!-- Кнопка для додавання ролі Administrator -->
+                    @if (!user.Roles.Contains("Administrator"))
+                    {
+                        <form method="post" asp-action="AssignRoleToUser" asp-route-userId="@user.UserId" asp-route-roleName="Administrator">
+                            <button type="submit" class="btn btn-primary">Надати роль Адмін</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <!-- Кнопка для видалення ролі Administrator -->
+                        <form method="post" asp-action="RemoveRoleFromUser" asp-route-userId="@user.UserId" asp-route-roleName="Administrator">
+                            <button type="submit" class="btn btn-danger">Забрати роль Адмін</button>
+                        </form>
+                    }
+
+                    <!-- Кнопка для додавання ролі Translator -->
+                    @if (!user.Roles.Contains("Translator"))
+                    {
+                        <form method="post" asp-action="AssignRoleToUser" asp-route-userId="@user.UserId" asp-route-roleName="Translator">
+                            <button type="submit" class="btn btn-secondary">Надати роль Перекладач</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <!-- Кнопка для видалення ролі Translator -->
+                        <form method="post" asp-action="RemoveRoleFromUser" asp-route-userId="@user.UserId" asp-route-roleName="Translator">
+                            <button type="submit" class="btn btn-warning">Забрати роль Перекладач</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

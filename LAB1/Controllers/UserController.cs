@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using LAB1.Models; // Залежно від розташування вашої моделі User
+using LAB1.Models;
+using Microsoft.AspNetCore.Authorization; // Залежно від розташування вашої моделі User
+using LAB1.Resources; // Простір імен для ресурсів
+
 
 public class UserController : Controller
 {
@@ -85,5 +88,30 @@ public class UserController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    [Authorize]
+    public async Task<IActionResult> Profile()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound("Користувача не знайдено");
+        }
 
+        var roles = await _userManager.GetRolesAsync(user);
+
+        // Якщо немає жодної ролі, встановлюємо "Читач"
+        if (roles == null || roles.Count == 0)
+        {
+            roles = new List<string> { "Читач" };
+        }
+
+        var model = new UserProfileViewModel
+        {
+            UserName = user.UserName,
+            Email = user.Email,
+            Roles = string.Join(", ", roles.Select(role => RoleTranslations.ResourceManager.GetString(role) ?? role))
+        };
+
+        return View(model);
+    }
 }
