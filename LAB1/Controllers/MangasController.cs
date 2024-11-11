@@ -386,5 +386,30 @@ namespace LAB1.Controllers
             return RedirectToAction("Profile", "User"); // Перенаправлення на сторінку користувача
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RemoveBookmark(int mangaId)
+        {
+            // Отримуємо поточного користувача
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(); // Якщо користувач не авторизований
+            }
+
+            // Знаходимо закладку для видалення
+            var bookmark = await _context.Bookmarks
+                .FirstOrDefaultAsync(b => b.MangaId == mangaId && b.UserId == user.Id);
+
+            if (bookmark != null)
+            {
+                // Видаляємо закладку
+                _context.Bookmarks.Remove(bookmark);
+                await _context.SaveChangesAsync();
+            }
+
+            // Перенаправляємо користувача назад на сторінку манги
+            return RedirectToAction("MangaDetails", new { id = mangaId });
+        }
+
     }
 }

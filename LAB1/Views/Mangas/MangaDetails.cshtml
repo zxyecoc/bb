@@ -15,8 +15,11 @@
         </div>
         @if (User.Identity.IsAuthenticated)
         {
-            @if (@Model.IsBookmarked)
+            @if (Model.IsBookmarked)
             {
+                <form method="post" asp-action="RemoveBookmark" asp-route-mangaId="@Model.Manga.Id">
+                    <button type="submit" class="btn btn-danger">Видалити з закладок</button>
+                </form>
                 <p class="text-success">Додано в закладки</p>
             }
             else
