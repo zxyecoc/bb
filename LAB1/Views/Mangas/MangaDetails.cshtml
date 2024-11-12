@@ -68,8 +68,15 @@
         <div class="manga-description">
             <h2>Опис</h2>
             <p>@Model.Manga.Description</p>
+            <div class="tags-container">
+                <strong>Теги:</strong>
+                @foreach (var tag in Model.Manga.Tags)
+                {
+                    <span class="tag">@tag.Name</span>
+                }
+            </div>
         </div>
-
+  
         <!-- Кнопка додати коментар -->
         <div class="add-comment-container">
             <form asp-action="AddComment" asp-controller="Mangas" method="post">
@@ -98,6 +105,4 @@
             }
         </div>
     </div>
-</div>
-
 </div>

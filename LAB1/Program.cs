@@ -52,8 +52,10 @@ app.MapControllerRoute(
 // Ініціалізуємо ролі під час запуску програми
 using (var scope = app.Services.CreateScope())
 {
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await SeedRoles(roleManager);
+    await SeedAdminUser(userManager, roleManager);
 }
 
 app.Run();
@@ -69,6 +71,43 @@ async Task SeedRoles(RoleManager<IdentityRole> roleManager)
     if (!await roleManager.RoleExistsAsync("Translator"))
     {
         await roleManager.CreateAsync(new IdentityRole("Translator"));
+    }
+}
+
+async Task SeedAdminUser(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+{
+    // Перевіряємо, чи існує користувач з електронною поштою admin@gmail.com
+    var existingUser = await userManager.FindByEmailAsync("admin@gmail.com");
+
+    if (existingUser == null)
+    {
+        // Створюємо нового користувача
+        var adminUser = new User
+        {
+            UserName = "admin@gmail.com",
+            Email = "admin@gmail.com",
+            EmailConfirmed = true // Ви можете встановити EmailConfirmed у true, щоб не вимагати підтвердження
+        };
+
+        // Створюємо користувача з паролем
+        var createUserResult = await userManager.CreateAsync(adminUser, "Admin_12345678");
+
+        if (createUserResult.Succeeded)
+        {
+            // Перевіряємо, чи існує роль Administrator і додаємо її користувачу
+            if (await roleManager.RoleExistsAsync("Administrator"))
+            {
+                await userManager.AddToRoleAsync(adminUser, "Administrator");
+            }
+        }
+        else
+        {
+            // Логування помилок, якщо створення користувача не вдалося
+            foreach (var error in createUserResult.Errors)
+            {
+                Console.WriteLine($"Помилка створення користувача: {error.Description}");
+            }
+        }
     }
 }
 

@@ -1,0 +1,22 @@
+﻿@model AddChapterViewModel
+
+<h2>Додати розділ до манги</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="ChapterNumber">Номер розділу</label>
+        <input type="number" class="form-control" id="ChapterNumber" name="ChapterNumber" value="@Model.ChapterNumber" required />
+    </div>
+
+    <div class="form-group">
+        <label for="VolumeNumber">Номер тому</label>
+        <input type="number" class="form-control" id="VolumeNumber" name="VolumeNumber" value="@Model.VolumeNumber" required />
+    </div>
+
+    <div class="form-group">
+        <label for="PageImageUrls">URL зображень сторінок (через кому)</label>
+        <input type="text" class="form-control" id="PageImageUrls" name="PageImageUrls" value="@string.Join(",", Model.PageImageUrls)" placeholder="Введіть URL сторінок через кому" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Додати розділ</button>
+</form>

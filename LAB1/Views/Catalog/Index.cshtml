@@ -1,21 +1,50 @@
 ﻿@model IEnumerable<LAB1.Models.Manga>
 
-<h1>Каталог Манги</h1>
+@if (ViewBag.SearchQuery == null)
+{
+    <h1>Каталог Манги</h1>
+}
+else 
+{<h1>Результати за пошуком: "@ViewBag.SearchQuery"</h1>}
+
 
 <div class="catalog-container">
 
-    <!-- Контейнер з мангами -->
-    <div class="manga-container">
-        @foreach (var manga in Model)
+    @if (ViewBag.SearchQuery != null)
+    {
+        @if (Model != null && Model.Any())
         {
-            <div class="manga-item">
-                <a href="@Url.Action("MangaDetails", "Mangas", new { id = manga.Id })" class="manga-link">
-                    <img src="@manga.CoverUrl" alt="@manga.Title" class="manga-cover" />
-                    <h3>@manga.Title</h3>
-                </a>
+            <div class="manga-container">
+                @foreach (var manga in Model)
+                {
+                    <div class="manga-item">
+                        <a href="@Url.Action("MangaDetails", "Mangas", new { id = manga.Id })" class="manga-link">
+                            <img src="@manga.CoverUrl" alt="@manga.Title" class="manga-cover" />
+                            <h3>@manga.Title</h3>
+                        </a>
+                    </div>
+                }
             </div>
         }
-    </div>
+        else
+        {
+            <p>Мангу за запитом "@ViewBag.SearchQuery" не знайдено.</p>
+        }
+    }
+    else
+    {
+        <div class="manga-container">
+            @foreach (var manga in Model)
+            {
+                <div class="manga-item">
+                    <a href="@Url.Action("MangaDetails", "Mangas", new { id = manga.Id })" class="manga-link">
+                        <img src="@manga.CoverUrl" alt="@manga.Title" class="manga-cover" />
+                        <h3>@manga.Title</h3>
+                    </a>
+                </div>
+            }
+        </div>
+    }
 
     <!-- Панель фільтрації -->
     <div class="filter-panel">
@@ -24,12 +53,19 @@
             <!-- Фільтр за тегами -->
             <div class="form-group">
                 <label>Теги:</label><br />
-                @foreach (var tag in ViewBag.Tags as List<LAB1.Models.Tag>)
+                @if (ViewBag.Tags != null)
                 {
-                    <div class="form-check">
-                        <input type="checkbox" name="selectedTags" value="@tag.Id" class="form-check-input" />
-                        <label class="form-check-label">@tag.Name</label>
-                    </div>
+                    @foreach (var tag in ViewBag.Tags as List<LAB1.Models.Tag>)
+                    {
+                        <div class="form-check">
+                            <input type="checkbox" name="selectedTags" value="@tag.Id" class="form-check-input" />
+                            <label class="form-check-label">@tag.Name</label>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Теги відсутні.</p>
                 }
             </div>
 
@@ -76,6 +112,7 @@
             </div>
         </form>
     </div>
+
 
 </div>
 

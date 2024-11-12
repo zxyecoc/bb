@@ -25,6 +25,7 @@ namespace LAB1.Data
         public DbSet<Rating> Ratings { get; set; } = default!;
         public DbSet<Bookmark> Bookmarks { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

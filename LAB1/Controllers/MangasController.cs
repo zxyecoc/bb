@@ -410,6 +410,23 @@ namespace LAB1.Controllers
             // Перенаправляємо користувача назад на сторінку манги
             return RedirectToAction("MangaDetails", new { id = mangaId });
         }
+        public async Task<IActionResult> Search(string searchQuery)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                return RedirectToAction("Index", "Catalog");
+            }
 
+            var searchResults = await _context.Manga
+                .Where(m => m.Title.Contains(searchQuery))
+                .ToListAsync();
+
+            // Заповнюємо ViewBag.Tags для уникнення NullReferenceException
+            ViewBag.Tags = await _context.Tags.ToListAsync();
+            ViewBag.Authors = await _context.Authors.ToListAsync();
+            ViewBag.SearchQuery = searchQuery; // Зберігаємо пошуковий запит у ViewBag
+
+            return View("/Views/Catalog/Index.cshtml", searchResults);
+        }
     }
 }
