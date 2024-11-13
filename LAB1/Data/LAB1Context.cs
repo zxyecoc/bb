@@ -24,6 +24,9 @@ namespace LAB1.Data
         public DbSet<Comment> Comments { get; set; } = default!;
         public DbSet<Rating> Ratings { get; set; } = default!;
         public DbSet<Bookmark> Bookmarks { get; set; }
+        public DbSet<Chapter> Chapters { get; set; }
+        public DbSet<Page> Pages { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

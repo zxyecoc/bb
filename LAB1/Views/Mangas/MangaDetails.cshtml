@@ -1,8 +1,8 @@
 ﻿@model MangaDetailsViewModel
 
 <div class="manga-details-container">
-    <!-- Ліва секція з обкладинкою та основною інформацією -->
-    <div class="manga-cover-info-section">
+    <!-- Ліва панель: обкладинка та основна інформація -->
+    <div class="manga-left-panel">
         <div class="manga-cover-container">
             <img src="@Model.Manga.CoverUrl" alt="@Model.Manga.Title" class="manga-cover" />
         </div>
@@ -13,27 +13,29 @@
             <p><strong>Ілюстратор:</strong> @Model.Manga.Illustrator.Name</p>
             <p><strong>Статус:</strong> @(Model.Manga.Status ? "Завершено" : "Продовжується")</p>
         </div>
+
+        <!-- Кнопка закладок -->
         @if (User.Identity.IsAuthenticated)
         {
-            @if (Model.IsBookmarked)
-            {
-                <form method="post" asp-action="RemoveBookmark" asp-route-mangaId="@Model.Manga.Id">
-                    <button type="submit" class="btn btn-danger">Видалити з закладок</button>
-                </form>
-                <p class="text-success">Додано в закладки</p>
-            }
-            else
-            {
-                <form method="post" asp-action="AddBookmark" asp-route-mangaId="@Model.Manga.Id">
-                    <button type="submit" class="btn btn-primary">Додати до закладок</button>
-                </form>
-            }
+            <div class="bookmark-button">
+                @if (Model.IsBookmarked)
+                {
+                    <form method="post" asp-action="RemoveBookmark" asp-route-mangaId="@Model.Manga.Id">
+                        <button type="submit" class="btn btn-danger w-100">Видалити з закладок</button>
+                    </form>
+                }
+                else
+                {
+                    <form method="post" asp-action="AddBookmark" asp-route-mangaId="@Model.Manga.Id">
+                        <button type="submit" class="btn btn-primary w-100">Додати до закладок</button>
+                    </form>
+                }
+            </div>
         }
     </div>
 
-    <!-- Права секція з описом, кнопкою додати рейтинг, коментарями та кнопкою додати коментар -->
-    <div class="manga-description-comments-section">
-        <!-- Кнопка для додавання рейтингу -->
+    <!-- Права панель: розділи, рейтинг та коментарі -->
+    <div class="manga-right-panel">
         @if (User.Identity.IsAuthenticated)
         {
             <div class="rating-button-container">
@@ -61,48 +63,61 @@
             <p>Тільки авторизовані користувачі можуть додавати рейтинг.</p>
         }
         <div>
-            <strong>Average Rating:</strong> @Model.Manga.AverageRating
+            <strong>Рейтинг манги:</strong> @Model.Manga.AverageRating
         </div>
-
-        <!-- Опис манги -->
         <div class="manga-description">
             <h2>Опис</h2>
             <p>@Model.Manga.Description</p>
-            <div class="tags-container">
-                <strong>Теги:</strong>
-                @foreach (var tag in Model.Manga.Tags)
-                {
-                    <span class="tag">@tag.Name</span>
-                }
-            </div>
-        </div>
-  
-        <!-- Кнопка додати коментар -->
-        <div class="add-comment-container">
-            <form asp-action="AddComment" asp-controller="Mangas" method="post">
-                <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
-                <textarea name="content" required placeholder="Напишіть свій коментар"></textarea>
-                <button type="submit">Додати коментар</button>
-            </form>
         </div>
 
-        <!-- Коментарі -->
+        <div class="tags-container">
+            <strong>Теги:</strong>
+            @foreach (var tag in Model.Manga.Tags)
+            {
+                <span class="tag">@tag.Name</span>
+            }
+        </div>
+
+        <!-- Список розділів -->
+        <h3>Доступні розділи:</h3>
+        <ul class="chapter-list">
+            @foreach (var chapter in Model.Manga.Chapter.OrderBy(c => c.VolumeNumber).ThenBy(c => c.ChapterNumber))
+            {
+                <li>
+                    <a href="@Url.Action("ReadChapter", "Mangas", new { chapterId = chapter.Id })" class="chapter-link">
+                        Том @chapter.VolumeNumber, Розділ @chapter.ChapterNumber
+                    </a>
+                    <!-- Кнопка для видалення розділу -->
+                    <form asp-action="DeleteChapter" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей розділ?');">
+                        <input type="hidden" name="chapterId" value="@chapter.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                    </form>
+                </li>
+            }
+        </ul>
+        <a href="@Url.Action("CreateChapter", "Mangas", new { mangaId = Model.Manga.Id })" class="btn btn-success">
+            Додати розділ
+        </a>   
+
+        <!-- Блок коментарів -->
         <div class="comments-section">
             <h3>Коментарі:</h3>
-            @if (Model.Manga.Comments != null && Model.Manga.Comments.Any())
-            {
-                foreach (var comment in Model.Manga.Comments)
+            <div class="add-comment-container">
+                <form asp-action="AddComment" method="post">
+                    <textarea name="content" required placeholder="Напишіть свій коментар" class="form-control"></textarea>
+                    <button type="submit" class="btn btn-success">Додати коментар</button>
+                </form>
+            </div>
+            <div class="comments-list">
+                @foreach (var comment in Model.Manga.Comments)
                 {
                     <div class="comment">
                         <p><strong>@comment.User</strong> (@comment.CreatedAt):</p>
                         <p>@comment.Content</p>
                     </div>
                 }
-            }
-            else
-            {
-                <p>Коментарів поки що немає.</p>
-            }
+            </div>
         </div>
     </div>
 </div>
+

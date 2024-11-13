@@ -9,6 +9,7 @@ using LAB1.Data;
 using LAB1.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.Elfie.Model.Structures;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LAB1.Controllers
 {
@@ -242,6 +243,7 @@ namespace LAB1.Controllers
                 .Include(t => t.Tags)
                 .Include(m => m.Ratings)
                 .Include(m => m.Comments)
+                .Include(m => m.Chapter)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (manga == null)
@@ -428,5 +430,122 @@ namespace LAB1.Controllers
 
             return View("/Views/Catalog/Index.cshtml", searchResults);
         }
+        public IActionResult CreateChapter(int mangaId)
+        {
+            var model = new AddChapterViewModel
+            {
+                MangaId = mangaId
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadChapter(int mangaId, int volumeNumber, int chapterNumber, IFormFileCollection folderPath)
+        {
+            // Отримуємо мангу з бази даних
+            var manga = await _context.Manga.FirstOrDefaultAsync(m => m.Id == mangaId);
+            if (manga == null)
+            {
+                return NotFound();
+            }
+
+            // Форматуємо назву манги для використання у шляху
+            var mangaTitle = RemoveInvalidChars(manga.Title);
+
+            // Створюємо новий розділ
+            var chapter = new Chapter
+            {
+                MangaId = mangaId,
+                VolumeNumber = volumeNumber,
+                ChapterNumber = chapterNumber
+            };
+
+            _context.Chapters.Add(chapter);
+            await _context.SaveChangesAsync();
+
+            // Створюємо папку для зображень розділу
+            var chapterFolderPath = Path.Combine("wwwroot/images/chapters", mangaTitle, $"Vol_{volumeNumber}", $"Ch_{chapterNumber}");
+            if (!Directory.Exists(chapterFolderPath))
+            {
+                Directory.CreateDirectory(chapterFolderPath);
+            }
+
+            // Завантажуємо зображення
+            int pageNumber = 1;
+            foreach (var file in folderPath.OrderBy(f => f.FileName))
+            {
+                var fileName = $"{pageNumber++}.png";
+                var filePath = Path.Combine(chapterFolderPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                // Додаємо сторінку до розділу
+                var page = new Page
+                {
+                    ChapterId = chapter.Id,
+                    ImagePath = $"/images/chapters/{mangaTitle}/Vol_{volumeNumber}/Ch_{chapterNumber}/{fileName}",
+                    PageNumber = pageNumber - 1
+                };
+
+                _context.Pages.Add(page);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("MangaDetails", new { id = mangaId });
+        }
+
+        // Метод для видалення недійсних символів з назви
+        private string RemoveInvalidChars(string input)
+        {
+            // Заміна пробілів на підкреслення
+            string result = input.Replace(" ", "_");
+
+            // Видалення недійсних символів
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                result = result.Replace(c.ToString(), "");
+            }
+
+            return result;
+        }
+
+
+        public async Task<IActionResult> ReadChapter(int chapterId)
+        {
+            var chapter = await _context.Chapters
+                .Include(c => c.Pages.OrderBy(p => p.PageNumber))
+                .FirstOrDefaultAsync(c => c.Id == chapterId);
+
+            if (chapter == null)
+            {
+                return NotFound();
+            }
+
+            return View(chapter);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteChapter(int chapterId)
+        {
+            // Знаходимо розділ за ID
+            var chapter = await _context.Chapters.FindAsync(chapterId);
+            if (chapter == null)
+            {
+                return NotFound();
+            }
+
+            // Видаляємо розділ з бази даних
+            _context.Chapters.Remove(chapter);
+            await _context.SaveChangesAsync();
+
+            // Після видалення перенаправляємо на сторінку манги
+            return RedirectToAction("MangaDetails", new { id = chapter.MangaId });
+        }
+
+
     }
 }

@@ -1,0 +1,20 @@
+﻿@model AddChapterViewModel
+
+<h2>Додати новий розділ</h2>
+
+<form asp-action="UploadChapter" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="MangaId" value="@Model.MangaId" />
+    <div class="form-group">
+        <label for="volumeNumber">Номер тому:</label>
+        <input type="number" name="VolumeNumber" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="chapterNumber">Номер розділу:</label>
+        <input type="number" name="ChapterNumber" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="folderPath">Шлях до папки з зображеннями:</label>
+        <input type="file" name="FolderPath" class="form-control" webkitdirectory directory required />
+    </div>
+    <button type="submit" class="btn btn-primary">Завантажити розділ</button>
+</form>

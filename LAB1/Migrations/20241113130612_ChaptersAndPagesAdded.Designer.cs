@@ -4,6 +4,7 @@ using LAB1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LAB1.Migrations
 {
     [DbContext(typeof(LAB1Context))]
-    partial class LAB1ContextModelSnapshot : ModelSnapshot
+    [Migration("20241113130612_ChaptersAndPagesAdded")]
+    partial class ChaptersAndPagesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -480,7 +483,7 @@ namespace LAB1.Migrations
             modelBuilder.Entity("LAB1.Models.Chapter", b =>
                 {
                     b.HasOne("LAB1.Models.Manga", "Manga")
-                        .WithMany("Chapter")
+                        .WithMany()
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -619,8 +622,6 @@ namespace LAB1.Migrations
 
             modelBuilder.Entity("LAB1.Models.Manga", b =>
                 {
-                    b.Navigation("Chapter");
-
                     b.Navigation("Comments");
 
                     b.Navigation("Ratings");

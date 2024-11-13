@@ -1,0 +1,9 @@
+﻿@model Chapter
+
+<h2>Том @Model.VolumeNumber, Розділ @Model.ChapterNumber</h2>
+<div class="chapter-pages">
+    @foreach (var mangaPage in Model.Pages)
+    {
+        <img src="@mangaPage.ImagePath" class="manga-page" alt="Page @mangaPage.PageNumber" />
+    }
+</div>

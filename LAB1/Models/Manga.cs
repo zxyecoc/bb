@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LAB1.Models
 {
@@ -35,10 +36,13 @@ namespace LAB1.Models
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
 
+        [NotMapped]
+        public Rating Rating { get; set; }
         public ICollection<Rating>? Ratings { get; set; }
         public double? AverageRating { get; set; }
 
         public ICollection<Tag> Tags { get; set; } = new List<Tag>(); // Зв'язок з тегами
+        public ICollection<Chapter> Chapter { get; set; } = new List<Chapter>();
 
     }
 }
