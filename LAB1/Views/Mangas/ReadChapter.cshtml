@@ -5,9 +5,17 @@
 <div class="chapter-container">
     @foreach (var mangaPage in Model.Pages.OrderBy(p => p.PageNumber))
     {
-        <div class="chapter-page">
+        <div class="chapter-page" style="display: none;">
             <img src="@mangaPage.ImagePath" alt="Page @mangaPage.PageNumber" />
         </div>
+    }
+</div>
+
+<!-- Відображення поточної сторінки з загальною кількістю -->
+<div class="page-navigation">
+    @if (Model.Pages.Any())
+    {
+        <p>Сторінка @Model.CurrentPageNumber з @Model.Pages.Count сторінок</p>
     }
 </div>
 
@@ -15,56 +23,55 @@
     let currentPage = 0;
     const pages = document.querySelectorAll('.chapter-page');
 
-    // Отримуємо дані про поточний розділ та мангу
+    // Отримуємо дані про поточний розділ
     const currentChapterId = @Model.Id;
     const mangaId = @Model.MangaId;
     const isLastPage = () => currentPage === pages.length - 1;
     const isFirstPage = () => currentPage === 0;
 
     function showPage(index) {
+        // Сховуємо всі сторінки, окрім поточної
         pages.forEach((page, i) => {
             page.style.display = i === index ? 'block' : 'none';
         });
-    }
-
-    function previousPage() {
-        if (isLastPage()) {
-            // Якщо це остання сторінка розділу, переходимо на наступний розділ
-            window.location.href = `/Mangas/NextChapter?currentChapterId=${currentChapterId}&mangaId=${mangaId}`;
-        } else {
-            if (currentPage < pages.length - 1) {
-                currentPage++;
-                showPage(currentPage);
-            }
-        }
+        // Оновлюємо поточний номер сторінки
+        document.querySelector('.page-navigation p').textContent = `Сторінка ${index + 1} з ${pages.length} сторінок`;
     }
 
     function nextPage() {
-        if (isFirstPage()) {
-            // Якщо це перша сторінка розділу, переходимо на попередній розділ
-            window.location.href = `/Mangas/PreviousChapter?currentChapterId=${currentChapterId}&mangaId=${mangaId}`;
+        if (currentPage > 0) {
+            currentPage--;
+            showPage(currentPage);
         } else {
-            if (currentPage > 0) {
-                currentPage--;
-                showPage(currentPage);
-            }
+            // Якщо це перша сторінка, переходимо на попередній розділ (можна замінити на реальну навігацію)
+            window.location.href = `/Mangas/PreviousChapter?currentChapterId=${currentChapterId}&mangaId=${mangaId}`;
         }
     }
 
-    // Показуємо першу сторінку по замовчуванню
+    function  previousPage() {
+        if (currentPage < pages.length - 1) {
+            currentPage++;
+            showPage(currentPage);
+        } else {
+            // Якщо це остання сторінка, переходимо на наступний розділ (можна замінити на реальну навігацію)
+            window.location.href = `/Mangas/NextChapter?currentChapterId=${currentChapterId}&mangaId=${mangaId}`;
+        }
+    }
+
+    // Показуємо першу сторінку
     showPage(currentPage);
 
-    // Додаємо обробник кліків на зображення
+    // Додаємо обробник кліків на зображення для зміни сторінки
     document.querySelectorAll('.chapter-page img').forEach((img) => {
         img.addEventListener('click', (event) => {
             const clickX = event.clientX;
             const imgWidth = img.clientWidth;
 
+            // Якщо клікнули на праву частину зображення - наступна сторінка
             if (clickX > imgWidth / 2) {
-                // Клік на праву частину зображення - переходимо на попередню сторінку
                 nextPage();
             } else {
-                // Клік на ліву частину зображення - переходимо на наступну сторінку
+                // Якщо клікнули на ліву частину зображення - попередня сторінка
                 previousPage();
             }
         });

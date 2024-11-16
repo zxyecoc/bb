@@ -111,6 +111,17 @@
         <!-- Блок коментарів -->
         <div class="comments-section">
             <h3>Коментарі:</h3>
+
+            <!-- Відображення повідомлень про помилки чи успіх -->
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
             <div class="add-comment-container">
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -146,6 +157,18 @@
                 }
             </div>
         </div>
+        <!-- JavaScript для перевірки коментаря -->
+        <script>
+            document.getElementById("commentForm").addEventListener("submit", function (event) {
+                const content = document.getElementById("commentContent").value;
+
+                // Перевірка довжини коментаря
+                if (content.length < 5 || content.length > 500) {
+                    alert("Коментар має містити від 5 до 500 символів.");
+                    event.preventDefault(); // Зупиняємо відправку форми
+                }
+            });
+        </script>
     </div>
 </div>
 

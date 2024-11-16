@@ -287,6 +287,26 @@ namespace LAB1.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int mangaId, string content)
         {
+            // Перевірка на мінімальну та максимальну довжину
+            if (string.IsNullOrWhiteSpace(content) || content.Length < 4 || content.Length > 2000)
+            {
+                TempData["Error"] = "Коментар має містити від 4 до 2000 символів.";
+                return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
+            }
+
+            // Перевірка на заборонені слова
+            var bannedWords = new List<string> { "спам", "образа", "ненормативна лексика" };
+            foreach (var word in bannedWords)
+            {
+                if (content.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    TempData["Error"] = "Ваш коментар містить заборонені слова. Будь ласка, виправте текст.";
+                    return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
+                }
+            }
+
+            content = System.Net.WebUtility.HtmlEncode(content);
+
             var comment = new Comment
             {
                 Content = content,
@@ -539,8 +559,7 @@ namespace LAB1.Controllers
             return result;
         }
 
-
-        public async Task<IActionResult> ReadChapter(int chapterId)
+        public async Task<IActionResult> ReadChapter(int chapterId, int page = 1)
         {
             var chapter = await _context.Chapters
                 .Include(c => c.Pages.OrderBy(p => p.PageNumber))
@@ -550,6 +569,9 @@ namespace LAB1.Controllers
             {
                 return NotFound();
             }
+
+            // Оновлення поточної сторінки в моделі
+            chapter.CurrentPageNumber = page;
 
             return View(chapter);
         }

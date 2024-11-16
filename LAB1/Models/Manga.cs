@@ -43,6 +43,5 @@ namespace LAB1.Models
 
         public ICollection<Tag> Tags { get; set; } = new List<Tag>(); // Зв'язок з тегами
         public ICollection<Chapter> Chapter { get; set; } = new List<Chapter>();
-
     }
 }
