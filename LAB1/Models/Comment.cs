@@ -10,7 +10,7 @@ namespace LAB1.Models
         [Required]
         public string Content { get; set; } // Текст коментаря
 
-        public string User { get; set; } // Ім'я користувача
+        public string UserName { get; set; } // Ім'я користувача
 
         public User user { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Дата і час створення коментаря

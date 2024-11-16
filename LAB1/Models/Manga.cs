@@ -37,7 +37,7 @@ namespace LAB1.Models
         public List<Comment> Comments { get; set; } = new List<Comment>();
 
         [NotMapped]
-        public Rating Rating { get; set; }
+        [ValidateNever] public Rating Rating { get; set; }
         public ICollection<Rating>? Ratings { get; set; }
         public double? AverageRating { get; set; }
 

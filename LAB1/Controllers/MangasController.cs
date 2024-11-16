@@ -41,9 +41,9 @@ namespace LAB1.Controllers
             }
 
             var manga = await _context.Manga
-                .Include(m => m.Comments)            // Завантажуємо коментарі манги
-                .ThenInclude(c => c.User)            // Завантажуємо користувачів, що залишили коментарі
-                .FirstOrDefaultAsync(m => m.Id == id);  // Знаходимо мангу за ID
+    .Include(m => m.Comments) // Завантажуємо колекцію коментарів
+    .Include(m => m.Comments.Select(c => c.UserName)) // Завантажуємо користувача для кожного коментаря
+    .FirstOrDefaultAsync(m => m.Id == id);
 
             if (manga == null)
             {
@@ -290,7 +290,7 @@ namespace LAB1.Controllers
             var comment = new Comment
             {
                 Content = content,
-                User = User?.Identity?.Name ?? "Анонім",
+                UserName = User?.Identity?.Name,
                 MangaId = mangaId,
                 CreatedAt = DateTime.Now
             };
@@ -299,6 +299,22 @@ namespace LAB1.Controllers
             await _context.SaveChangesAsync();
 
             // Повертаємося на сторінку деталей манги після додавання коментаря
+            return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteComment(int commentId, int mangaId)
+        {
+            var comment = await _context.Comments.FindAsync(commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            _context.Comments.Remove(comment);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
         }
 
@@ -349,6 +365,15 @@ namespace LAB1.Controllers
             {
                 averageRating = manga.Ratings.Average(r => r.UserRating); // Обчислення середнього рейтингу
             }
+
+            // Оновлюємо середній рейтинг у манги
+            if (manga != null)
+            {
+                manga.AverageRating = averageRating;
+                _context.Manga.Update(manga); // Оновлюємо мангу в базі даних
+            }
+
+            await _context.SaveChangesAsync(); // Зберігаємо зміни
 
             ViewData["AverageRating"] = averageRating; // Зберігаємо середній рейтинг в ViewData
 
@@ -439,6 +464,7 @@ namespace LAB1.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Translator, Administrator")]
         [HttpPost]
         public async Task<IActionResult> UploadChapter(int mangaId, int volumeNumber, int chapterNumber, IFormFileCollection folderPath)
         {
@@ -528,23 +554,88 @@ namespace LAB1.Controllers
             return View(chapter);
         }
 
+        [Authorize(Roles = "Translator, Administrator")]
         [HttpPost]
         public async Task<IActionResult> DeleteChapter(int chapterId)
         {
             // Знаходимо розділ за ID
-            var chapter = await _context.Chapters.FindAsync(chapterId);
+            var chapter = await _context.Chapters
+                .Include(c => c.Manga)
+                .FirstOrDefaultAsync(c => c.Id == chapterId);
+
             if (chapter == null)
             {
                 return NotFound();
+            }
+
+            // Форматуємо назву манги для використання у шляху
+            var mangaTitle = RemoveInvalidChars(chapter.Manga.Title);
+            var volumeNumber = chapter.VolumeNumber;
+            var chapterNumber = chapter.ChapterNumber;
+
+            // Визначаємо шлях до папки розділу
+            var chapterFolderPath = Path.Combine("wwwroot/images/chapters", mangaTitle, $"Vol_{volumeNumber}", $"Ch_{chapterNumber}");
+
+            // Перевіряємо, чи існує папка, і видаляємо її разом з усіма файлами
+            if (Directory.Exists(chapterFolderPath))
+            {
+                try
+                {
+                    Directory.Delete(chapterFolderPath, true); // true - видалити папку з усіма файлами і підпапками
+                }
+                catch (Exception ex)
+                {
+                    // Логування помилки
+                    Console.WriteLine($"Помилка при видаленні папки розділу: {ex.Message}");
+                }
             }
 
             // Видаляємо розділ з бази даних
             _context.Chapters.Remove(chapter);
             await _context.SaveChangesAsync();
 
-            // Після видалення перенаправляємо на сторінку манги
+            // Перенаправляємо на сторінку манги після видалення
             return RedirectToAction("MangaDetails", new { id = chapter.MangaId });
         }
+
+        public IActionResult NextChapter(int currentChapterId, int mangaId)
+        {
+            var currentChapter = _context.Chapters.FirstOrDefault(c => c.Id == currentChapterId);
+            if (currentChapter == null) return NotFound();
+
+            // Знаходимо наступний розділ
+            var nextChapter = _context.Chapters
+                .Where(c => c.MangaId == mangaId && c.ChapterNumber > currentChapter.ChapterNumber)
+                .OrderBy(c => c.ChapterNumber)
+                .FirstOrDefault();
+
+            // Якщо наступного розділу немає, переходимо на сторінку манги
+            if (nextChapter == null)
+                return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
+
+            // Переходимо на наступний розділ
+            return RedirectToAction("ReadChapter", new { chapterId = nextChapter.Id });
+        }
+
+        public IActionResult PreviousChapter(int currentChapterId, int mangaId)
+        {
+            var currentChapter = _context.Chapters.FirstOrDefault(c => c.Id == currentChapterId);
+            if (currentChapter == null) return NotFound();
+
+            // Знаходимо попередній розділ
+            var previousChapter = _context.Chapters
+                .Where(c => c.MangaId == mangaId && c.ChapterNumber < currentChapter.ChapterNumber)
+                .OrderByDescending(c => c.ChapterNumber)
+                .FirstOrDefault();
+
+            // Якщо попереднього розділу немає, переходимо на сторінку манги
+            if (previousChapter == null)
+                return RedirectToAction("MangaDetails", "Mangas", new { id = mangaId });
+
+            // Переходимо на попередній розділ
+            return RedirectToAction("ReadChapter", new { chapterId = previousChapter.Id });
+        }
+
 
 
     }

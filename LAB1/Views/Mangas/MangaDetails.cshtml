@@ -87,33 +87,61 @@
                     <a href="@Url.Action("ReadChapter", "Mangas", new { chapterId = chapter.Id })" class="chapter-link">
                         Том @chapter.VolumeNumber, Розділ @chapter.ChapterNumber
                     </a>
-                    <!-- Кнопка для видалення розділу -->
-                    <form asp-action="DeleteChapter" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей розділ?');">
-                        <input type="hidden" name="chapterId" value="@chapter.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
-                    </form>
+
+                    @if (User.IsInRole("Translator") || User.IsInRole("Administrator"))
+                    {
+                        <!-- Кнопка для видалення розділу -->
+                        <form asp-action="DeleteChapter" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей розділ?');">
+                            <input type="hidden" name="chapterId" value="@chapter.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                        </form>
+                    }
                 </li>
             }
         </ul>
-        <a href="@Url.Action("CreateChapter", "Mangas", new { mangaId = Model.Manga.Id })" class="btn btn-success">
-            Додати розділ
-        </a>   
+
+        @if (User.IsInRole("Translator") || User.IsInRole("Administrator"))
+        {
+            <!-- Кнопка для додавання розділу -->
+            <a href="@Url.Action("CreateChapter", "Mangas", new { mangaId = Model.Manga.Id })" class="btn btn-success">
+                Додати розділ
+            </a>
+        }
 
         <!-- Блок коментарів -->
         <div class="comments-section">
             <h3>Коментарі:</h3>
             <div class="add-comment-container">
-                <form asp-action="AddComment" method="post">
-                    <textarea name="content" required placeholder="Напишіть свій коментар" class="form-control"></textarea>
-                    <button type="submit" class="btn btn-success">Додати коментар</button>
-                </form>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="AddComment" method="post">
+                        <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
+                        <textarea name="content" required placeholder="Напишіть свій коментар" class="form-control"></textarea>
+                        <button type="submit" class="btn btn-success">Додати коментар</button>
+                    </form>
+                }
+                else
+                {
+                    <p>Тільки авторизовані користувачі можуть писати коментарі.</p>
+                }
             </div>
             <div class="comments-list">
-                @foreach (var comment in Model.Manga.Comments)
+                @foreach (var comment in Model.Manga.Comments.OrderByDescending(c => c.CreatedAt))
                 {
                     <div class="comment">
-                        <p><strong>@comment.User</strong> (@comment.CreatedAt):</p>
+                        <p><strong>@comment.UserName</strong> @comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
                         <p>@comment.Content</p>
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <!-- Кнопка для видалення коментаря -->
+                            <form asp-action="DeleteComment" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей коментар?');">
+                                <form asp-action="DeleteComment" method="post" style="display:inline;">
+                                    <input type="hidden" name="commentId" value="@comment.Id" />
+                                    <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                                </form>
+                            </form>
+                        }
                     </div>
                 }
             </div>

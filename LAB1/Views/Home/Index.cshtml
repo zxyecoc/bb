@@ -1,4 +1,49 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<!-- Секція для манг з останніми розділами -->
+<div class="recent-mangas">
+    <h3>Нещодавно оновлені манги</h3>
+    @if (ViewData["RecentChapters"] is List<LAB1.Models.Chapter> recentChapters && recentChapters.Any())
+    {
+        <div class="manga-container1">
+            @foreach (var chapter in recentChapters)
+            {
+                <div class="manga-item1">
+                    <a href="@Url.Action("ReadChapter", "Mangas", new { chapterId = chapter.Id })" class="manga-link">
+                        <img src="@chapter.Manga.CoverUrl" alt="@chapter.Manga.Title" class="manga-cover1" />
+                        <h3>@chapter.Manga.Title</h3>
+                        <p>Том @chapter.VolumeNumber, Розділ @chapter.ChapterNumber</p>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Немає манг з останніми розділами.</p>
+    }
+</div>
+
+<!-- Секція для найбільш оцінених манг -->
+<div class="top-rated-mangas">
+    <h3>Найбільш оцінені манги</h3>
+    @if (ViewData["TopRatedMangas"] is List<LAB1.Models.Manga> topRatedMangas && topRatedMangas.Any())
+    {
+        <div class="manga-container1">
+            @foreach (var manga in topRatedMangas)
+            {
+                <div class="manga-item1">
+                    <a href="@Url.Action("MangaDetails", "Mangas", new { id = manga.Id })">
+                        <img src="@manga.CoverUrl" alt="@manga.Title" class="manga-cover1" />
+                        <h3>@manga.Title</h3>
+                        <h2>@manga.AverageRating</h2> 
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Немає манг з оцінками.</p>
+    }
+</div>
+
 

@@ -45,9 +45,11 @@
                 <td>@Html.DisplayFor(modelItem => item.Chapters)</td>
                 <td>@(item.Status ? "Завершено" : "Продовжується")</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏️ Редагувати</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">🗑️ Видалити</a>
+                        <a href="/Mangas/MangaDetails/@item.Id" class="btn btn-primary btn-sm">📖 Перегляд</a>
+                    </div>
                 </td>
             </tr>
         }

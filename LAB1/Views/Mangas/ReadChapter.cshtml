@@ -1,9 +1,72 @@
-﻿@model Chapter
+﻿@model LAB1.Models.Chapter
 
 <h2>Том @Model.VolumeNumber, Розділ @Model.ChapterNumber</h2>
-<div class="chapter-pages">
-    @foreach (var mangaPage in Model.Pages)
+
+<div class="chapter-container">
+    @foreach (var mangaPage in Model.Pages.OrderBy(p => p.PageNumber))
     {
-        <img src="@mangaPage.ImagePath" class="manga-page" alt="Page @mangaPage.PageNumber" />
+        <div class="chapter-page">
+            <img src="@mangaPage.ImagePath" alt="Page @mangaPage.PageNumber" />
+        </div>
     }
 </div>
+
+<script>
+    let currentPage = 0;
+    const pages = document.querySelectorAll('.chapter-page');
+
+    // Отримуємо дані про поточний розділ та мангу
+    const currentChapterId = @Model.Id;
+    const mangaId = @Model.MangaId;
+    const isLastPage = () => currentPage === pages.length - 1;
+    const isFirstPage = () => currentPage === 0;
+
+    function showPage(index) {
+        pages.forEach((page, i) => {
+            page.style.display = i === index ? 'block' : 'none';
+        });
+    }
+
+    function previousPage() {
+        if (isLastPage()) {
+            // Якщо це остання сторінка розділу, переходимо на наступний розділ
+            window.location.href = `/Mangas/NextChapter?currentChapterId=${currentChapterId}&mangaId=${mangaId}`;
+        } else {
+            if (currentPage < pages.length - 1) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        }
+    }
+
+    function nextPage() {
+        if (isFirstPage()) {
+            // Якщо це перша сторінка розділу, переходимо на попередній розділ
+            window.location.href = `/Mangas/PreviousChapter?currentChapterId=${currentChapterId}&mangaId=${mangaId}`;
+        } else {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        }
+    }
+
+    // Показуємо першу сторінку по замовчуванню
+    showPage(currentPage);
+
+    // Додаємо обробник кліків на зображення
+    document.querySelectorAll('.chapter-page img').forEach((img) => {
+        img.addEventListener('click', (event) => {
+            const clickX = event.clientX;
+            const imgWidth = img.clientWidth;
+
+            if (clickX > imgWidth / 2) {
+                // Клік на праву частину зображення - переходимо на попередню сторінку
+                nextPage();
+            } else {
+                // Клік на ліву частину зображення - переходимо на наступну сторінку
+                previousPage();
+            }
+        });
+    });
+</script>

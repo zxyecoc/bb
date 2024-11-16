@@ -5,6 +5,7 @@
 }
 
 body {
+
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -23,6 +24,73 @@ main {
     width: 90%;
     padding: 20px;
     margin: 50px auto;
+}
+
+/* Загальні стилі для обох секцій */
+.recent-mangas, .top-rated-mangas {
+    margin-bottom: 40px; /* Між секціями буде більше простору */
+}
+
+    /* Стилі для списків в секціях */
+    .recent-mangas ul, .top-rated-mangas ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    /* Стилі для кожного елементу списку */
+    .recent-mangas li, .top-rated-mangas li {
+        margin-bottom: 10px;
+    }
+
+    /* Посилання в списках */
+    .recent-mangas a, .top-rated-mangas a {
+        text-decoration: none;
+        color: #007bff;
+    }
+
+        /* Ховер ефект для посилань */
+        .recent-mangas a:hover, .top-rated-mangas a:hover {
+            text-decoration: underline;
+        }
+
+/* Відображення секції для найбільш оцінених манг */
+.top-rated-mangas {
+    margin-top: 20px;
+}
+
+    /* Вирівнювання елементів списку для найбільш оцінених манг */
+    .top-rated-mangas ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .top-rated-mangas li {
+        margin-bottom: 10px;
+    }
+
+.manga-container1 {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 4 манги в ряд */
+    gap: 20px;
+}
+
+.manga-item1 {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    text-align: center;
+    transition: transform 0.3s;
+    height: 475px;
+    overflow: hidden;
+}
+
+.manga-cover1 {
+    width: 100%; /* Зображення займає всю ширину контейнера */
+    height: 350px; /* Фіксована висота для зображень */
+    object-fit: cover; /* Обрізає зображення, щоб вмістити у вказаний розмір */
+    border-radius: 5px; /* Закруглені кути зображення */
 }
 
 footer {
@@ -291,6 +359,43 @@ header .logo-container {
         background-color: #0056b3;
     }
 
+
+
+.chapter-container {
+    max-width: 90%; /* Зменшуємо ширину контейнера до 90% */
+    margin: 0 auto; /* Центруємо контейнер */
+    overflow-x: hidden; /* Вимикаємо горизонтальний скроллбар */
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.chapter-page img {
+    max-width: 100%; /* Забезпечуємо, щоб зображення адаптувалося під ширину контейнера */
+    height: auto; /* Висота пропорційно ширині */
+}
+
+
+.chapter-page {
+    margin: 0 10px; /* Розмір відступу між сторінками */
+}
+
+.navigation-buttons {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+.nav-button {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+/*    position: sticky;*/
+}
 
 
 

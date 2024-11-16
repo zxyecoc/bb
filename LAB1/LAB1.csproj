@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="wwwroot\images\chapters\bleach\" />
+    <Folder Include="wwwroot\images\chapters\Бліч\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,5 +8,7 @@
         public int VolumeNumber { get; set; } // Номер тому
         public int ChapterNumber { get; set; } // Номер розділу
         public List<Page> Pages { get; set; } = new List<Page>();
+        public DateTime UpdatedAt { get; set; } = DateTime.Now; // Дата оновлення розділу
+
     }
 }
