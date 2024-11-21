@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LAB1.Data;
 using LAB1.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.Elfie.Model.Structures;
 using Microsoft.AspNetCore.Authorization;
+
 
 namespace LAB1.Controllers
 {
@@ -233,10 +229,8 @@ namespace LAB1.Controllers
           return (_context.Manga?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        // Метод MangaDetails для отримання конкретної манги по ID
         public async Task<IActionResult> MangaDetails(int id)
         {
-            // Завантажуємо мангу за її id
             var manga = await _context.Manga
                 .Include(a => a.Author)
                 .Include(i => i.Illustrator)
@@ -251,36 +245,31 @@ namespace LAB1.Controllers
                 return NotFound();
             }
 
-            // Обчислення середнього рейтингу
             double averageRating = manga.Ratings.Any() ? manga.Ratings.Average(r => r.UserRating) : 5;
             manga.AverageRating = averageRating;
 
-            // Отримуємо поточного користувача
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                // Якщо користувач не автентифікований, передаємо лише мангу без інформації про закладки
                 var model1 = new MangaDetailsViewModel
                 {
                     Manga = manga,
-                    IsBookmarked = false // Якщо користувач не автентифікований, закладка не існує
+                    IsBookmarked = false 
                 };
 
-                return View(model1); // Повертаємо ViewModel
+                return View(model1); 
             }
 
-            // Перевірка на існування закладки для користувача
             var existingBookmark = await _context.Bookmarks
                 .FirstOrDefaultAsync(b => b.MangaId == manga.Id && b.UserId == user.Id);
 
-            // Створюємо ViewModel і передаємо необхідні дані
             var model = new MangaDetailsViewModel
             {
                 Manga = manga,
-                IsBookmarked = existingBookmark != null // Перевіряємо, чи є закладка
+                IsBookmarked = existingBookmark != null 
             };
 
-            return View(model); // Повертаємо ViewModel
+            return View(model); 
         }
 
 
@@ -484,65 +473,6 @@ namespace LAB1.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Translator, Administrator")]
-        [HttpPost]
-        public async Task<IActionResult> UploadChapter(int mangaId, int volumeNumber, int chapterNumber, IFormFileCollection folderPath)
-        {
-            // Отримуємо мангу з бази даних
-            var manga = await _context.Manga.FirstOrDefaultAsync(m => m.Id == mangaId);
-            if (manga == null)
-            {
-                return NotFound();
-            }
-
-            // Форматуємо назву манги для використання у шляху
-            var mangaTitle = RemoveInvalidChars(manga.Title);
-
-            // Створюємо новий розділ
-            var chapter = new Chapter
-            {
-                MangaId = mangaId,
-                VolumeNumber = volumeNumber,
-                ChapterNumber = chapterNumber
-            };
-
-            _context.Chapters.Add(chapter);
-            await _context.SaveChangesAsync();
-
-            // Створюємо папку для зображень розділу
-            var chapterFolderPath = Path.Combine("wwwroot/images/chapters", mangaTitle, $"Vol_{volumeNumber}", $"Ch_{chapterNumber}");
-            if (!Directory.Exists(chapterFolderPath))
-            {
-                Directory.CreateDirectory(chapterFolderPath);
-            }
-
-            // Завантажуємо зображення
-            int pageNumber = 1;
-            foreach (var file in folderPath.OrderBy(f => f.FileName))
-            {
-                var fileName = $"{pageNumber++}.png";
-                var filePath = Path.Combine(chapterFolderPath, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                // Додаємо сторінку до розділу
-                var page = new Page
-                {
-                    ChapterId = chapter.Id,
-                    ImagePath = $"/images/chapters/{mangaTitle}/Vol_{volumeNumber}/Ch_{chapterNumber}/{fileName}",
-                    PageNumber = pageNumber - 1
-                };
-
-                _context.Pages.Add(page);
-            }
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("MangaDetails", new { id = mangaId });
-        }
 
         // Метод для видалення недійсних символів з назви
         private string RemoveInvalidChars(string input)
@@ -570,7 +500,6 @@ namespace LAB1.Controllers
                 return NotFound();
             }
 
-            // Оновлення поточної сторінки в моделі
             chapter.CurrentPageNumber = page;
 
             return View(chapter);
@@ -657,8 +586,5 @@ namespace LAB1.Controllers
             // Переходимо на попередній розділ
             return RedirectToAction("ReadChapter", new { chapterId = previousChapter.Id });
         }
-
-
-
     }
 }

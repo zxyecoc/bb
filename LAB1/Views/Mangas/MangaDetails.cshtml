@@ -1,4 +1,8 @@
 ﻿@model MangaDetailsViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using LAB1.Resources
+@inject IHtmlLocalizer<SharedResources> Localizer
 
 <div class="manga-details-container">
     <!-- Ліва панель: обкладинка та основна інформація -->
@@ -9,9 +13,9 @@
         <div class="manga-info">
             <h1>@Model.Manga.Title</h1>
             <p><strong>Рік випуску:</strong> @Model.Manga.ReleaseYear</p>
-            <p><strong>Автор:</strong> @Model.Manga.Author.Name</p>
-            <p><strong>Ілюстратор:</strong> @Model.Manga.Illustrator.Name</p>
-            <p><strong>Статус:</strong> @(Model.Manga.Status ? "Завершено" : "Продовжується")</p>
+            <p><strong>@Localizer["Author"]:</strong> @Model.Manga.Author.Name</p>
+            <p><strong>@Localizer["Illustrator"]:</strong> @Model.Manga.Illustrator.Name</p>
+            <p><strong>@Localizer["Status"]:</strong> @(Model.Manga.Status ? @Localizer["Completed"] : @Localizer["Continued"])</p>
         </div>
 
         <!-- Кнопка закладок -->
@@ -21,13 +25,13 @@
                 @if (Model.IsBookmarked)
                 {
                     <form method="post" asp-action="RemoveBookmark" asp-route-mangaId="@Model.Manga.Id">
-                        <button type="submit" class="btn btn-danger w-100">Видалити з закладок</button>
+                        <button type="submit" class="btn btn-danger w-100">@Localizer["DeleteBookmark"]</button>
                     </form>
                 }
                 else
                 {
                     <form method="post" asp-action="AddBookmark" asp-route-mangaId="@Model.Manga.Id">
-                        <button type="submit" class="btn btn-primary w-100">Додати до закладок</button>
+                        <button type="submit" class="btn btn-primary w-100">@Localizer["AddBookmark"]</button>
                     </form>
                 }
             </div>
@@ -41,7 +45,7 @@
             <div class="rating-button-container">
                 <form asp-action="AddRating" method="post">
                     <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
-                    <label for="rating">Додати рейтинг:</label>
+                    <label for="rating">@Localizer["AddRating"]:</label>
                     <select name="ratingValue" id="rating">
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -54,24 +58,24 @@
                         <option value="9">9</option>
                         <option value="10">10</option>
                     </select>
-                    <button type="submit">Підтвердити рейтинг</button>
+                    <button type="submit">@Localizer["Apply"]</button>
                 </form>
             </div>
         }
         else
         {
-            <p>Тільки авторизовані користувачі можуть додавати рейтинг.</p>
+            <p>@Localizer["OnlyAuthorizedUsersCanAddRatings"]</p>
         }
         <div>
-            <strong>Рейтинг манги:</strong> @Model.Manga.AverageRating
+            <strong>@Localizer["Rating"]:</strong> @Model.Manga.AverageRating
         </div>
         <div class="manga-description">
-            <h2>Опис</h2>
+            <h2>@Localizer["Description"]</h2>
             <p>@Model.Manga.Description</p>
         </div>
 
         <div class="tags-container">
-            <strong>Теги:</strong>
+            <strong>@Localizer["Tags"]:</strong>
             @foreach (var tag in Model.Manga.Tags)
             {
                 <span class="tag">@tag.Name</span>
@@ -79,13 +83,13 @@
         </div>
 
         <!-- Список розділів -->
-        <h3>Доступні розділи:</h3>
+        <h3>@Localizer["Chapters"]:</h3>
         <ul class="chapter-list">
             @foreach (var chapter in Model.Manga.Chapter.OrderBy(c => c.VolumeNumber).ThenBy(c => c.ChapterNumber))
             {
                 <li>
                     <a href="@Url.Action("ReadChapter", "Mangas", new { chapterId = chapter.Id })" class="chapter-link">
-                        Том @chapter.VolumeNumber, Розділ @chapter.ChapterNumber
+                        @Localizer["Volume"] @chapter.VolumeNumber, @Localizer["Chapter"] @chapter.ChapterNumber
                     </a>
 
                     @if (User.IsInRole("Translator") || User.IsInRole("Administrator"))
@@ -93,7 +97,7 @@
                         <!-- Кнопка для видалення розділу -->
                         <form asp-action="DeleteChapter" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей розділ?');">
                             <input type="hidden" name="chapterId" value="@chapter.Id" />
-                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                            <button type="submit" class="btn btn-danger btn-sm">@Localizer["Delete"]</button>
                         </form>
                     }
                 </li>
@@ -104,13 +108,13 @@
         {
             <!-- Кнопка для додавання розділу -->
             <a href="@Url.Action("CreateChapter", "Mangas", new { mangaId = Model.Manga.Id })" class="btn btn-success">
-                Додати розділ
+                @Localizer["AddChapter"]
             </a>
         }
 
         <!-- Блок коментарів -->
         <div class="comments-section">
-            <h3>Коментарі:</h3>
+            <h3>@Localizer["Comments"]:</h3>
 
             <!-- Відображення повідомлень про помилки чи успіх -->
             @if (TempData["Error"] != null)
@@ -127,13 +131,13 @@
                 {
                     <form asp-action="AddComment" method="post">
                         <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
-                        <textarea name="content" required placeholder="Напишіть свій коментар" class="form-control"></textarea>
-                        <button type="submit" class="btn btn-success">Додати коментар</button>
+                        <textarea name="content" required placeholder="@Localizer["WriteYourComment"]" class="form-control"></textarea>
+                        <button type="submit" class="btn btn-success">@Localizer["AddComment"]</button>
                     </form>
                 }
                 else
                 {
-                    <p>Тільки авторизовані користувачі можуть писати коментарі.</p>
+                    <p>@Localizer["OnlyAuthorizedUsersCanWriteComments"]</p>
                 }
             </div>
             <div class="comments-list">
@@ -164,7 +168,7 @@
 
                 // Перевірка довжини коментаря
                 if (content.length < 5 || content.length > 500) {
-                    alert("Коментар має містити від 5 до 500 символів.");
+                    alert(@Localizer["CommentLenghtAllert"]);
                     event.preventDefault(); // Зупиняємо відправку форми
                 }
             });

@@ -7,41 +7,41 @@ namespace LAB1.Models
     public class Manga
     {
         [Key]
-        public int Id { get; set; } // Унікальний ідентифікатор манги
+        public int Id { get; set; } 
 
         [Required]
-        public string Title { get; set; } // Назва манги
+        public string Title { get; set; }
 
         [Required]
-        public int ReleaseYear { get; set; } // Рік виходу
+        public int ReleaseYear { get; set; } 
         
         [Required]
-        [ValidateNever]public string Genres { get; set; } = "Unknown"; // Жанри
+        [ValidateNever]public string Genres { get; set; } = "Unknown"; 
 
-        public string Description { get; set; } // Опис манги
+        public string Description { get; set; } 
 
-        public int AuthorId { get; set; } // Зовнішній ключ
-        [ValidateNever]public Author Author { get; set; } // Навігаційна властивість
+        public int AuthorId { get; set; } 
+        [ValidateNever]public Author Author { get; set; } 
 
-        public int IllustratorId { get; set; } // Зовнішній ключ
-        [ValidateNever]public Author Illustrator { get; set; } // Ілюстратор
+        public int IllustratorId { get; set; } 
+        [ValidateNever]public Author Illustrator { get; set; } 
 
-        public int Volumes { get; set; } // Кількість томів
+        public int Volumes { get; set; } 
 
-        public int Chapters { get; set; } // Кількість глав
+        public int Chapters { get; set; } 
 
-        public string CoverUrl { get; set; } // URL обкладинки манги
+        public string CoverUrl { get; set; } 
 
-        public bool Status { get; set; } // True - завершено, False - продовжується
+        public bool Status { get; set; } 
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
 
         [NotMapped]
         [ValidateNever] public Rating Rating { get; set; }
-        public ICollection<Rating>? Ratings { get; set; }
+        public ICollection<Rating>? Ratings { get; set; } 
         public double? AverageRating { get; set; }
 
-        public ICollection<Tag> Tags { get; set; } = new List<Tag>(); // Зв'язок з тегами
+        public ICollection<Tag> Tags { get; set; } = new List<Tag>(); 
         public ICollection<Chapter> Chapter { get; set; } = new List<Chapter>();
     }
 }

@@ -1,14 +1,18 @@
 ﻿@model UserProfileViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using LAB1.Resources
+@inject IHtmlLocalizer<SharedResources> Localizer
 
-<h2>Особиста сторінка користувача</h2>
+<h2>@Localizer["PersonalPage"]</h2>
 
 <div>
-    <h3>Ім'я користувача: @Model.UserName</h3>
-    <p>Електронна пошта: @Model.Email</p>
-    <span>Ролі: @Model.Roles</span>
+    <h3>@Localizer["UserName"]: @Model.UserName</h3>
+    <p>@Localizer["Email"]: @Model.Email</p>
+    <span>@Localizer["Role"]: @Model.Roles</span>
 </div>
 
-<h4>Мої закладки</h4>
+<h4>@Localizer["Bookmarks"]</h4>
  @if (Model.Bookmarks != null && Model.Bookmarks.Any())
  {
      <div class="row">
@@ -27,7 +31,7 @@
                          </h5>
                          <!-- Кнопка для видалення закладки -->
                          <form method="post" asp-action="RemoveBookmark" asp-route-bookmarkId="@bookmark.Id">
-                             <button type="submit" class="btn btn-danger">Видалити закладку</button>
+                            <button type="submit" class="btn btn-danger">@Localizer["DeleteBookmark"]</button>
                          </form>
                      </div>
                  </div>

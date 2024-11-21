@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using LAB1.Models;
-using Microsoft.AspNetCore.Authorization; // Залежно від розташування вашої моделі User
+using Microsoft.AspNetCore.Authorization; 
 using LAB1.Resources;
-using SQLitePCL; // Простір імен для ресурсів
+using SQLitePCL; 
 using LAB1.Data;
 using LAB1.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +18,7 @@ public class UserController : Controller
 
     public UserController(LAB1Context context, UserManager<User> userManager, SignInManager<User> signInManager)
     {
-        _context = context;  // Додаємо ініціалізацію контексту
+        _context = context;  
         _userManager = userManager;
         _signInManager = signInManager;
 
@@ -35,6 +34,12 @@ public class UserController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
+        if (model == null)
+        {
+            ModelState.AddModelError("", "Model cannot be null");
+            return View("Register", model);
+        }
+
         if (ModelState.IsValid)
         {
             var user = new User
@@ -59,7 +64,7 @@ public class UserController : Controller
             }
         }
 
-        return View(model);
+        return View("Register", model); // Повертаємо модель для відображення помилок
     }
 
     [HttpGet]

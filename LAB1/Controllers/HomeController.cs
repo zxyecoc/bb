@@ -1,8 +1,11 @@
 ﻿using LAB1.Data;
 using LAB1.Models;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace LAB1.Controllers
 {
@@ -10,16 +13,30 @@ namespace LAB1.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly LAB1Context _context;
+        private readonly IStringLocalizer<HomeController> _localizer;
 
         // Об'єднаний конструктор
-        public HomeController(ILogger<HomeController> logger, LAB1Context context)
+        public HomeController(ILogger<HomeController> logger, LAB1Context context, IStringLocalizer<HomeController> localizer)
         {
             _logger = logger;
             _context = context;
+            _localizer = localizer;
+        }
+
+        public IActionResult SetLanguage(string culture, string returnUrl)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+
+            return LocalRedirect(returnUrl);
         }
 
         public async Task<IActionResult> Index()
         {
+
             // Отримуємо 5 манг з останніми розділами
             var recentMangas = await _context.Chapters
                 .Include(c => c.Manga) // Включаємо мангу
@@ -58,6 +75,6 @@ namespace LAB1.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        }     
     }
 }

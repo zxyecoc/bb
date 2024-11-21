@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using LAB1.Resources
+@inject IHtmlLocalizer<SharedResources> Localizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,48 +17,50 @@
 <body>
     <header>
         <div class="header-container">
-            <!-- Ліва частина шапки (логотип та кнопки Головна і Каталог) -->
+            <!-- Ліва частина шапки -->
             <nav class="nav-buttons-left">
                 <a href="/" class="logo-container">
-                    <span class="logo">Манґачит</span>
-                    <p class="logoa1">Читай манґу українською</p>
+                    <span class="logo">@Localizer["Logo"]</span>
+                    <p class="logoa1">@Localizer["Subtitle"]</p>
                 </a>
-                <a class="btn btn-custom" href="/">Головна</a>
-                <a class="btn btn-custom" href="/Catalog">Каталог манг</a>
+                <a class="btn btn-custom" href="/">@Localizer["HomeButton"]</a>
+                <a class="btn btn-custom" href="/Catalog">@Localizer["CatalogButton"]</a>
                 <form method="get" asp-action="Search" asp-controller="Mangas" class="search-form">
-                    <input type="text" name="searchQuery" placeholder="Пошук манги..." class="search-input" />
+                    <input type="text" name="searchQuery" placeholder="@Localizer["SearchPlaceholder"]" class="search-input" />
                     <button type="submit" class="btn btn-search">🔍</button>
                 </form>
                 @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
                 {
-                    <a class="btn btn-custom" href="/Admin/Users">Користувачі</a>
+                    <a class="btn btn-custom" href="/Admin/Users">@Localizer["AdminUsersButton"]</a>
                 }
             </nav>
 
-            <!-- Права частина шапки (кнопки Вхід, Реєстрація, Вихід, Привіт, User, Додати для Адміністратора) -->
+            <!-- Права частина шапки -->
             <nav class="nav-buttons-right">
+                <a href="@Url.Action("SetLanguage", "Home", new { culture = "uk", returnUrl = Context.Request.Path })">Українська</a>
+                <a href="@Url.Action("SetLanguage", "Home", new { culture = "en", returnUrl = Context.Request.Path })">Англійська</a>
                 @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
                 {
                     <div class="btn-group dropdown-hover">
                         <button type="button" class="btn btn-custom dropdown-toggle">
-                            Додати
+                            @Localizer["Add"]
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Mangas">Додати манґу</a></li>
-                            <li><a class="dropdown-item" href="/Authors/Index">Додати автора</a></li>
-                            <li><a class="dropdown-item" href="/Tags/Index">Додати теги</a></li>
+                            <li><a class="dropdown-item" href="/Mangas">@Localizer["AddManga"]</a></li>
+                            <li><a class="dropdown-item" href="/Authors/Index">@Localizer["AddAuthor"]</a></li>
+                            <li><a class="dropdown-item" href="/Tags/Index">@Localizer["AddTags"]</a></li>
                         </ul>
                     </div>
                 }
                 @if (User.Identity.IsAuthenticated)
                 {
                     <a class="btn btn-custom" href="/User/Profile">@User.Identity.Name</a>
-                    <a class="btn btn-custom" asp-controller="User" asp-action="Logout">Вихід</a>
+                    <a class="btn btn-custom" asp-controller="User" asp-action="Logout">@Localizer["Logout"]</a>
                 }
                 else
                 {
-                    <a class="btn btn-custom" asp-controller="User" asp-action="Login">Вхід</a>
-                    <a class="btn btn-custom" asp-controller="User" asp-action="Register">Реєстрація</a>
+                    <a class="btn btn-custom" asp-controller="User" asp-action="Login">@Localizer["Login"]</a>
+                    <a class="btn btn-custom" asp-controller="User" asp-action="Register">@Localizer["Register"]</a>
                 }
             </nav>
         </div>
@@ -64,7 +71,7 @@
     </main>
 
     <footer>
-        <p>ІПЗ-22-1</p>
+        <p>@Localizer["FooterText"]</p>
     </footer>
 
     @RenderSection("Scripts", required: false)

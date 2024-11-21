@@ -3,6 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using LAB1.Data;
 using Microsoft.AspNetCore.Identity;
 using LAB1.Models;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,7 @@ builder.Services.AddDbContext<LAB1Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LAB1Context") ?? throw new InvalidOperationException("Connection string 'LAB1Context' not found."))
      .EnableSensitiveDataLogging()
     );
+
 
 // Додаємо службу Identity для керування користувачами та ролями
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -27,7 +31,38 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddLocalization();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+const string defaultCulture = "en";
+var supportedCultures = new[]
+{
+    new CultureInfo("en"),
+    new CultureInfo("uk"),
+};
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+    options.RequestCultureProviders =
+    [
+        new QueryStringRequestCultureProvider(),
+        new CookieRequestCultureProvider(),
+        new AcceptLanguageHeaderRequestCultureProvider()
+    ];
+});
+
 var app = builder.Build();
+
+//app.UseRequestLocalization(new RequestLocalizationOptions
+//{
+//    DefaultRequestCulture = new RequestCulture("en"),
+//    SupportedCultures = new List<CultureInfo> { new CultureInfo("en"), new CultureInfo("uk") },
+//    SupportedUICultures = new List<CultureInfo> { new CultureInfo("en"), new CultureInfo("uk") }
+//});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -41,6 +76,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseRequestLocalization();
 
 app.UseAuthentication(); // Додаємо аутентифікацію
 app.UseAuthorization();
