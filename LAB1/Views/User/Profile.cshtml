@@ -20,13 +20,13 @@
          {
              <div class="col-md-4">
                  <div class="card mb-4">
-                     <a href="@Url.Action("MangaDetails", "Mangas", new { id = bookmark.Manga.Id })">
-                         <img src="@bookmark.Manga.CoverUrl" alt="@bookmark.Manga.Title" class="card-img-top" />
+                     <a href="@Url.Action("NewsPage", "Newses", new { id = bookmark.News.Id })">
+                         <img src="@bookmark.News.CoverUrl" alt="@bookmark.News.Title" class="card-img-top" />
                      </a>
                      <div class="card-body">
                          <h5 class="card-title">
-                             <a href="@Url.Action("MangaDetails", "Mangas", new { id = bookmark.Manga.Id })">
-                                 @bookmark.Manga.Title
+                             <a href="@Url.Action("MangaDetails", "Mangas", new { id = bookmark.News.Id })">
+                                 @bookmark.News.Title
                              </a>
                          </h5>
                          <!-- Кнопка для видалення закладки -->

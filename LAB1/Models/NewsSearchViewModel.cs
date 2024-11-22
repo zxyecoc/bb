@@ -1,8 +1,8 @@
 ﻿namespace LAB1.Models
 {
-    public class MangaSearchViewModel
+    public class NewsSearchViewModel
     {
         public string SearchQuery { get; set; }  // Поле для введення пошукового запиту
-        public List<Manga> Results { get; set; } // Результати пошуку
+        public List<News> Results { get; set; } // Результати пошуку
     }
 }

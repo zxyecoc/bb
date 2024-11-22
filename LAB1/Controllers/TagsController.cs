@@ -12,9 +12,9 @@ namespace LAB1.Controllers
 {
     public class TagsController : Controller
     {
-        private readonly LAB1Context _context;
+        private readonly NewsBlogContext _context;
 
-        public TagsController(LAB1Context context)
+        public TagsController(NewsBlogContext context)
         {
             _context = context;
         }

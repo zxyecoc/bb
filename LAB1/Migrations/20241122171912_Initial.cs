@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LAB1.Migrations
 {
     /// <inheritdoc />
-    public partial class initialcreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -183,38 +183,26 @@ namespace LAB1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Manga",
+                name: "News",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReleaseYear = table.Column<int>(type: "int", nullable: false),
-                    Genres = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NewsText = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AuthorId = table.Column<int>(type: "int", nullable: false),
-                    IllustratorId = table.Column<int>(type: "int", nullable: false),
-                    Volumes = table.Column<int>(type: "int", nullable: false),
-                    Chapters = table.Column<int>(type: "int", nullable: false),
                     CoverUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    AverageRating = table.Column<double>(type: "float", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Manga", x => x.Id);
+                    table.PrimaryKey("PK_News", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Manga_Authors_AuthorId",
+                        name: "FK_News_Authors_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "Authors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Manga_Authors_IllustratorId",
-                        column: x => x.IllustratorId,
-                        principalTable: "Authors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,7 +212,7 @@ namespace LAB1.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MangaId = table.Column<int>(type: "int", nullable: false)
+                    NewsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -236,9 +224,9 @@ namespace LAB1.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Bookmarks_Manga_MangaId",
-                        column: x => x.MangaId,
-                        principalTable: "Manga",
+                        name: "FK_Bookmarks_News_NewsId",
+                        column: x => x.NewsId,
+                        principalTable: "News",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -250,10 +238,10 @@ namespace LAB1.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    User = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     userId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MangaId = table.Column<int>(type: "int", nullable: false)
+                    NewsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -264,31 +252,31 @@ namespace LAB1.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Comments_Manga_MangaId",
-                        column: x => x.MangaId,
-                        principalTable: "Manga",
+                        name: "FK_Comments_News_NewsId",
+                        column: x => x.NewsId,
+                        principalTable: "News",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "MangaTags",
+                name: "NewsTags",
                 columns: table => new
                 {
-                    MangasId = table.Column<int>(type: "int", nullable: false),
+                    NewsId = table.Column<int>(type: "int", nullable: false),
                     TagsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MangaTags", x => new { x.MangasId, x.TagsId });
+                    table.PrimaryKey("PK_NewsTags", x => new { x.NewsId, x.TagsId });
                     table.ForeignKey(
-                        name: "FK_MangaTags_Manga_MangasId",
-                        column: x => x.MangasId,
-                        principalTable: "Manga",
+                        name: "FK_NewsTags_News_NewsId",
+                        column: x => x.NewsId,
+                        principalTable: "News",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MangaTags_Tags_TagsId",
+                        name: "FK_NewsTags_Tags_TagsId",
                         column: x => x.TagsId,
                         principalTable: "Tags",
                         principalColumn: "Id",
@@ -302,7 +290,7 @@ namespace LAB1.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MangaId = table.Column<int>(type: "int", nullable: false),
+                    NewsId = table.Column<int>(type: "int", nullable: false),
                     UserRating = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -310,9 +298,9 @@ namespace LAB1.Migrations
                 {
                     table.PrimaryKey("PK_Ratings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ratings_Manga_MangaId",
-                        column: x => x.MangaId,
-                        principalTable: "Manga",
+                        name: "FK_Ratings_News_NewsId",
+                        column: x => x.NewsId,
+                        principalTable: "News",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -357,9 +345,9 @@ namespace LAB1.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bookmarks_MangaId",
+                name: "IX_Bookmarks_NewsId",
                 table: "Bookmarks",
-                column: "MangaId");
+                column: "NewsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookmarks_UserId",
@@ -367,9 +355,9 @@ namespace LAB1.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_MangaId",
+                name: "IX_Comments_NewsId",
                 table: "Comments",
-                column: "MangaId");
+                column: "NewsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_userId",
@@ -377,24 +365,19 @@ namespace LAB1.Migrations
                 column: "userId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Manga_AuthorId",
-                table: "Manga",
+                name: "IX_News_AuthorId",
+                table: "News",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Manga_IllustratorId",
-                table: "Manga",
-                column: "IllustratorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MangaTags_TagsId",
-                table: "MangaTags",
+                name: "IX_NewsTags_TagsId",
+                table: "NewsTags",
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ratings_MangaId",
+                name: "IX_Ratings_NewsId",
                 table: "Ratings",
-                column: "MangaId");
+                column: "NewsId");
         }
 
         /// <inheritdoc />
@@ -422,7 +405,7 @@ namespace LAB1.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "MangaTags");
+                name: "NewsTags");
 
             migrationBuilder.DropTable(
                 name: "Ratings");
@@ -437,7 +420,7 @@ namespace LAB1.Migrations
                 name: "Tags");
 
             migrationBuilder.DropTable(
-                name: "Manga");
+                name: "News");
 
             migrationBuilder.DropTable(
                 name: "Authors");

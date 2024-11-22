@@ -10,7 +10,7 @@ namespace LAB1.Models
         [Required]
         public string Name { get; set; } // Назва тегу
 
-        public ICollection<Manga> Mangas { get; set; } = new List<Manga>(); // Зв'язок з мангами
+        public ICollection<News> News { get; set; } = new List<News>(); // Зв'язок з мангами
 
     }
 }

@@ -4,19 +4,16 @@ using LAB1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace LAB1.Migrations
 {
-    [DbContext(typeof(LAB1Context))]
-    [Migration("20241112232800_initialcreate")]
-    partial class initialcreate
+    [DbContext(typeof(NewsBlogContext))]
+    partial class NewsBlogContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,7 +81,7 @@ namespace LAB1.Migrations
                     b.Property<int>("MangaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("User")
+                    b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -100,7 +97,7 @@ namespace LAB1.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Manga", b =>
+            modelBuilder.Entity("LAB1.Models.News", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,47 +108,26 @@ namespace LAB1.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("AverageRating")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Chapters")
-                        .HasColumnType("int");
-
                     b.Property<string>("CoverUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NewsText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Genres")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IllustratorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReleaseYear")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Volumes")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("IllustratorId");
-
-                    b.ToTable("Manga");
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("LAB1.Models.Rating", b =>
@@ -262,21 +238,6 @@ namespace LAB1.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("MangaTag", b =>
-                {
-                    b.Property<int>("MangasId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MangasId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("MangaTags", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -412,9 +373,24 @@ namespace LAB1.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("NewsTag", b =>
+                {
+                    b.Property<int>("MangasId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MangasId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("NewsTags", (string)null);
+                });
+
             modelBuilder.Entity("LAB1.Models.Bookmark", b =>
                 {
-                    b.HasOne("LAB1.Models.Manga", "Manga")
+                    b.HasOne("LAB1.Models.News", "Manga")
                         .WithMany()
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -433,7 +409,7 @@ namespace LAB1.Migrations
 
             modelBuilder.Entity("LAB1.Models.Comment", b =>
                 {
-                    b.HasOne("LAB1.Models.Manga", "Manga")
+                    b.HasOne("LAB1.Models.News", "Manga")
                         .WithMany("Comments")
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -448,7 +424,7 @@ namespace LAB1.Migrations
                     b.Navigation("user");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Manga", b =>
+            modelBuilder.Entity("LAB1.Models.News", b =>
                 {
                     b.HasOne("LAB1.Models.Author", "Author")
                         .WithMany()
@@ -456,41 +432,18 @@ namespace LAB1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LAB1.Models.Author", "Illustrator")
-                        .WithMany()
-                        .HasForeignKey("IllustratorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Author");
-
-                    b.Navigation("Illustrator");
                 });
 
             modelBuilder.Entity("LAB1.Models.Rating", b =>
                 {
-                    b.HasOne("LAB1.Models.Manga", "Manga")
+                    b.HasOne("LAB1.Models.News", "Manga")
                         .WithMany("Ratings")
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Manga");
-                });
-
-            modelBuilder.Entity("MangaTag", b =>
-                {
-                    b.HasOne("LAB1.Models.Manga", null)
-                        .WithMany()
-                        .HasForeignKey("MangasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LAB1.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -544,7 +497,22 @@ namespace LAB1.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LAB1.Models.Manga", b =>
+            modelBuilder.Entity("NewsTag", b =>
+                {
+                    b.HasOne("LAB1.Models.News", null)
+                        .WithMany()
+                        .HasForeignKey("MangasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LAB1.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LAB1.Models.News", b =>
                 {
                     b.Navigation("Comments");
 

@@ -12,11 +12,11 @@ using Microsoft.EntityFrameworkCore;
 
 public class UserController : Controller
 {
-    private readonly LAB1Context _context;
+    private readonly NewsBlogContext _context;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
 
-    public UserController(LAB1Context context, UserManager<User> userManager, SignInManager<User> signInManager)
+    public UserController(NewsBlogContext context, UserManager<User> userManager, SignInManager<User> signInManager)
     {
         _context = context;  
         _userManager = userManager;
@@ -121,7 +121,7 @@ public class UserController : Controller
         // Отримуємо закладки користувача
         var bookmarks = await _context.Bookmarks
             .Where(b => b.UserId == user.Id)
-            .Include(b => b.Manga)
+            .Include(b => b.News)
             .ToListAsync();
         if (bookmarks == null)
         {

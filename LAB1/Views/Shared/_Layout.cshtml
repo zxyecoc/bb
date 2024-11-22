@@ -24,20 +24,19 @@
                     <p class="logoa1">@Localizer["Subtitle"]</p>
                 </a>
                 <a class="btn btn-custom" href="/">@Localizer["HomeButton"]</a>
-                <a class="btn btn-custom" href="/Catalog">@Localizer["CatalogButton"]</a>
-                <form method="get" asp-action="Search" asp-controller="Mangas" class="search-form">
+                <form method="get" asp-action="Search" asp-controller="Newses" class="search-form">
                     <input type="text" name="searchQuery" placeholder="@Localizer["SearchPlaceholder"]" class="search-input" />
                     <button type="submit" class="btn btn-search">🔍</button>
                 </form>
                 @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
                 {
-                    <a class="btn btn-custom" href="/Admin/Users">@Localizer["AdminUsersButton"]</a>
+                    <a class="btn btn-custom" href="/Admin/Users">Користувачі</a>
                 }
             </nav>
 
             <!-- Права частина шапки -->
             <nav class="nav-buttons-right">
-                <a href="@Url.Action("SetLanguage", "Home", new { culture = "uk", returnUrl = Context.Request.Path })">Українська</a>
+                <a href="@Url.Action("SetLanguage", "Home", new { culture = "uk", returnUrl = Context.Request.Path })">Українська</a>thrthtrhtrht
                 <a href="@Url.Action("SetLanguage", "Home", new { culture = "en", returnUrl = Context.Request.Path })">Англійська</a>
                 @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
                 {
@@ -46,7 +45,7 @@
                             @Localizer["Add"]
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Mangas">@Localizer["AddManga"]</a></li>
+                            <li><a class="dropdown-item" href="/Newses">@Localizer["AddNews"]</a></li>
                             <li><a class="dropdown-item" href="/Authors/Index">@Localizer["AddAuthor"]</a></li>
                             <li><a class="dropdown-item" href="/Tags/Index">@Localizer["AddTags"]</a></li>
                         </ul>

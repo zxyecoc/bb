@@ -20,11 +20,11 @@ namespace LAB1.Tests.ControllersTests
             var userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             var signInManagerMock = new Mock<SignInManager<User>>(userManagerMock.Object, Mock.Of<IHttpContextAccessor>(), Mock.Of<IUserClaimsPrincipalFactory<User>>(), null, null, null, null);
 
-            var options = new DbContextOptionsBuilder<LAB1Context>()
+            var options = new DbContextOptionsBuilder<NewsBlogContext>()
                .UseInMemoryDatabase("TestDatabase")
                .Options;
 
-            var context = new LAB1Context(options);  
+            var context = new NewsBlogContext(options);  
 
             var controller = new UserController(context, userManagerMock.Object, signInManagerMock.Object);
 
@@ -53,11 +53,11 @@ namespace LAB1.Tests.ControllersTests
             var userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             var signInManagerMock = new Mock<SignInManager<User>>(userManagerMock.Object, Mock.Of<IHttpContextAccessor>(), Mock.Of<IUserClaimsPrincipalFactory<User>>(), null, null, null, null);
 
-            var options = new DbContextOptionsBuilder<LAB1Context>()
+            var options = new DbContextOptionsBuilder<NewsBlogContext>()
                .UseInMemoryDatabase("TestDatabase")
                .Options;
 
-            var context = new LAB1Context(options);  // Використовуємо реальну in-memory базу даних
+            var context = new NewsBlogContext(options);  // Використовуємо реальну in-memory базу даних
 
             var controller = new UserController(context, userManagerMock.Object, signInManagerMock.Object);
 
@@ -93,11 +93,11 @@ namespace LAB1.Tests.ControllersTests
             var userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             var signInManagerMock = new Mock<SignInManager<User>>(userManagerMock.Object, Mock.Of<IHttpContextAccessor>(), Mock.Of<IUserClaimsPrincipalFactory<User>>(), null, null, null, null);
 
-            var options = new DbContextOptionsBuilder<LAB1Context>()
+            var options = new DbContextOptionsBuilder<NewsBlogContext>()
                .UseInMemoryDatabase("TestDatabase")
                .Options;
 
-            var context = new LAB1Context(options);  
+            var context = new NewsBlogContext(options);  
 
             var controller = new UserController(context, userManagerMock.Object, signInManagerMock.Object);
 

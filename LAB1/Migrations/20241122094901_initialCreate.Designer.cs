@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LAB1.Migrations
 {
-    [DbContext(typeof(LAB1Context))]
-    [Migration("20241116100825_CommentUserName")]
-    partial class CommentUserName
+    [DbContext(typeof(NewsBlogContext))]
+    [Migration("20241122094901_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,33 +66,6 @@ namespace LAB1.Migrations
                     b.ToTable("Bookmarks");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Chapter", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChapterNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MangaId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("VolumeNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MangaId");
-
-                    b.ToTable("Chapters");
-                });
-
             modelBuilder.Entity("LAB1.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -127,7 +100,7 @@ namespace LAB1.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Manga", b =>
+            modelBuilder.Entity("LAB1.Models.News", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,72 +111,26 @@ namespace LAB1.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("AverageRating")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Chapters")
-                        .HasColumnType("int");
-
                     b.Property<string>("CoverUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NewsText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Genres")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IllustratorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReleaseYear")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Volumes")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("IllustratorId");
-
-                    b.ToTable("Manga");
-                });
-
-            modelBuilder.Entity("LAB1.Models.Page", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChapterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PageNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChapterId");
-
-                    b.ToTable("Pages");
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("LAB1.Models.Rating", b =>
@@ -314,21 +241,6 @@ namespace LAB1.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("MangaTag", b =>
-                {
-                    b.Property<int>("MangasId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MangasId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("MangaTags", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -464,9 +376,24 @@ namespace LAB1.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("NewsTag", b =>
+                {
+                    b.Property<int>("MangasId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MangasId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("NewsTags", (string)null);
+                });
+
             modelBuilder.Entity("LAB1.Models.Bookmark", b =>
                 {
-                    b.HasOne("LAB1.Models.Manga", "Manga")
+                    b.HasOne("LAB1.Models.News", "Manga")
                         .WithMany()
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -483,20 +410,9 @@ namespace LAB1.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Chapter", b =>
-                {
-                    b.HasOne("LAB1.Models.Manga", "Manga")
-                        .WithMany("Chapter")
-                        .HasForeignKey("MangaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manga");
-                });
-
             modelBuilder.Entity("LAB1.Models.Comment", b =>
                 {
-                    b.HasOne("LAB1.Models.Manga", "Manga")
+                    b.HasOne("LAB1.Models.News", "Manga")
                         .WithMany("Comments")
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -511,7 +427,7 @@ namespace LAB1.Migrations
                     b.Navigation("user");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Manga", b =>
+            modelBuilder.Entity("LAB1.Models.News", b =>
                 {
                     b.HasOne("LAB1.Models.Author", "Author")
                         .WithMany()
@@ -519,52 +435,18 @@ namespace LAB1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LAB1.Models.Author", "Illustrator")
-                        .WithMany()
-                        .HasForeignKey("IllustratorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Author");
-
-                    b.Navigation("Illustrator");
-                });
-
-            modelBuilder.Entity("LAB1.Models.Page", b =>
-                {
-                    b.HasOne("LAB1.Models.Chapter", "Chapter")
-                        .WithMany("Pages")
-                        .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chapter");
                 });
 
             modelBuilder.Entity("LAB1.Models.Rating", b =>
                 {
-                    b.HasOne("LAB1.Models.Manga", "Manga")
+                    b.HasOne("LAB1.Models.News", "Manga")
                         .WithMany("Ratings")
                         .HasForeignKey("MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Manga");
-                });
-
-            modelBuilder.Entity("MangaTag", b =>
-                {
-                    b.HasOne("LAB1.Models.Manga", null)
-                        .WithMany()
-                        .HasForeignKey("MangasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LAB1.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -618,15 +500,23 @@ namespace LAB1.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LAB1.Models.Chapter", b =>
+            modelBuilder.Entity("NewsTag", b =>
                 {
-                    b.Navigation("Pages");
+                    b.HasOne("LAB1.Models.News", null)
+                        .WithMany()
+                        .HasForeignKey("MangasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LAB1.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("LAB1.Models.Manga", b =>
+            modelBuilder.Entity("LAB1.Models.News", b =>
                 {
-                    b.Navigation("Chapter");
-
                     b.Navigation("Comments");
 
                     b.Navigation("Ratings");

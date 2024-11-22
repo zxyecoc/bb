@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc.Razor;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<LAB1Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("LAB1Context") ?? throw new InvalidOperationException("Connection string 'LAB1Context' not found."))
+builder.Services.AddDbContext<NewsBlogContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("NewsBlogContext") ?? throw new InvalidOperationException("Connection string 'NewsBlogContext' not found."))
      .EnableSensitiveDataLogging()
     );
 
@@ -24,7 +24,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequireUppercase = true;        // Вимога великої літери
     options.Password.RequireLowercase = true;        // Вимога малої літери
 })
-.AddEntityFrameworkStores<LAB1Context>()
+.AddEntityFrameworkStores<NewsBlogContext>()
 .AddDefaultTokenProviders();
 
 
@@ -105,9 +105,9 @@ async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         await roleManager.CreateAsync(new IdentityRole("Administrator"));
     }
 
-    if (!await roleManager.RoleExistsAsync("Translator"))
+    if (!await roleManager.RoleExistsAsync("Editor"))
     {
-        await roleManager.CreateAsync(new IdentityRole("Translator"));
+        await roleManager.CreateAsync(new IdentityRole("Editor"));
     }
 }
 

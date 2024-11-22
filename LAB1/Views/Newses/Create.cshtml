@@ -1,4 +1,4 @@
-﻿@model LAB1.Models.Manga
+﻿@model LAB1.Models.News
 
 @{
     ViewData["Title"] = "Create";
@@ -6,7 +6,7 @@
 
 <h1>Create</h1>
 
-<h4>Manga</h4>
+<h4>News</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -16,11 +16,6 @@
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReleaseYear" class="control-label"></label>
-                <input asp-for="ReleaseYear" class="form-control" />
-                <span asp-validation-for="ReleaseYear" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label>Tags</label><br />
@@ -33,9 +28,9 @@
                 }
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="NewsText" class="control-label"></label>
+                <input asp-for="NewsText" class="form-control" />
+                <span asp-validation-for="NewsText" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="AuthorId" class="control-label">Автор</label>
@@ -45,31 +40,9 @@
                 <span asp-validation-for="AuthorId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IllustratorId" class="control-label">Ілюстратор</label>
-                <select asp-for="IllustratorId" class="form-control" asp-items="ViewBag.Illustrators">
-                    <option value="">Оберіть ілюстратора</option>
-                </select>
-                <span asp-validation-for="IllustratorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Volumes" class="control-label"></label>
-                <input asp-for="Volumes" class="form-control" />
-                <span asp-validation-for="Volumes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Chapters" class="control-label"></label>
-                <input asp-for="Chapters" class="form-control" />
-                <span asp-validation-for="Chapters" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="CoverUrl" class="control-label"></label>
                 <input asp-for="CoverUrl" class="form-control" />
                 <span asp-validation-for="CoverUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <input asp-for="Status" class="form-check-input" type="checkbox" id="statusCheckbox" />
-                <label asp-for="Status" class="form-check-label" for="statusCheckbox">Статус (Завершено)</label>
-                <span asp-validation-for="Status" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

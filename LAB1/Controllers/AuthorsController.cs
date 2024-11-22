@@ -12,9 +12,9 @@ namespace LAB1.Controllers
 {
     public class AuthorsController : Controller
     {
-        private readonly LAB1Context _context;
+        private readonly NewsBlogContext _context;
 
-        public AuthorsController(LAB1Context context)
+        public AuthorsController(NewsBlogContext context)
         {
             _context = context;
         }

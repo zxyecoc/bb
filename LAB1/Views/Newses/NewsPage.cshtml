@@ -1,4 +1,4 @@
-﻿@model MangaDetailsViewModel
+﻿@model News
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.Extensions.Localization
 @using LAB1.Resources
@@ -8,34 +8,12 @@
     <!-- Ліва панель: обкладинка та основна інформація -->
     <div class="manga-left-panel">
         <div class="manga-cover-container">
-            <img src="@Model.Manga.CoverUrl" alt="@Model.Manga.Title" class="manga-cover" />
+            <img src="@Model.CoverUrl" alt="@Model.Title" class="manga-cover" />
         </div>
         <div class="manga-info">
-            <h1>@Model.Manga.Title</h1>
-            <p><strong>Рік випуску:</strong> @Model.Manga.ReleaseYear</p>
-            <p><strong>@Localizer["Author"]:</strong> @Model.Manga.Author.Name</p>
-            <p><strong>@Localizer["Illustrator"]:</strong> @Model.Manga.Illustrator.Name</p>
-            <p><strong>@Localizer["Status"]:</strong> @(Model.Manga.Status ? @Localizer["Completed"] : @Localizer["Continued"])</p>
+            <h1>@Model.Title</h1>
+            <p><strong>@Localizer["Author"]:</strong> @Model.Author.Name</p>
         </div>
-
-        <!-- Кнопка закладок -->
-        @if (User.Identity.IsAuthenticated)
-        {
-            <div class="bookmark-button">
-                @if (Model.IsBookmarked)
-                {
-                    <form method="post" asp-action="RemoveBookmark" asp-route-mangaId="@Model.Manga.Id">
-                        <button type="submit" class="btn btn-danger w-100">@Localizer["DeleteBookmark"]</button>
-                    </form>
-                }
-                else
-                {
-                    <form method="post" asp-action="AddBookmark" asp-route-mangaId="@Model.Manga.Id">
-                        <button type="submit" class="btn btn-primary w-100">@Localizer["AddBookmark"]</button>
-                    </form>
-                }
-            </div>
-        }
     </div>
 
     <!-- Права панель: розділи, рейтинг та коментарі -->
@@ -44,7 +22,7 @@
         {
             <div class="rating-button-container">
                 <form asp-action="AddRating" method="post">
-                    <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
+                    <input type="hidden" name="newsId" value="@Model.Id" />
                     <label for="rating">@Localizer["AddRating"]:</label>
                     <select name="ratingValue" id="rating">
                         <option value="1">1</option>
@@ -66,54 +44,21 @@
         {
             <p>@Localizer["OnlyAuthorizedUsersCanAddRatings"]</p>
         }
-        <div>
-            <strong>@Localizer["Rating"]:</strong> @Model.Manga.AverageRating
-        </div>
         <div class="manga-description">
             <h2>@Localizer["Description"]</h2>
-            <p>@Model.Manga.Description</p>
-        </div>
+            <p>@Model.NewsText</p>
+        </div> 
 
         <div class="tags-container">
             <strong>@Localizer["Tags"]:</strong>
-            @foreach (var tag in Model.Manga.Tags)
+            @foreach (var tag in Model.Tags)
             {
                 <span class="tag">@tag.Name</span>
             }
         </div>
 
-        <!-- Список розділів -->
-        <h3>@Localizer["Chapters"]:</h3>
-        <ul class="chapter-list">
-            @foreach (var chapter in Model.Manga.Chapter.OrderBy(c => c.VolumeNumber).ThenBy(c => c.ChapterNumber))
-            {
-                <li>
-                    <a href="@Url.Action("ReadChapter", "Mangas", new { chapterId = chapter.Id })" class="chapter-link">
-                        @Localizer["Volume"] @chapter.VolumeNumber, @Localizer["Chapter"] @chapter.ChapterNumber
-                    </a>
-
-                    @if (User.IsInRole("Translator") || User.IsInRole("Administrator"))
-                    {
-                        <!-- Кнопка для видалення розділу -->
-                        <form asp-action="DeleteChapter" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей розділ?');">
-                            <input type="hidden" name="chapterId" value="@chapter.Id" />
-                            <button type="submit" class="btn btn-danger btn-sm">@Localizer["Delete"]</button>
-                        </form>
-                    }
-                </li>
-            }
-        </ul>
-
-        @if (User.IsInRole("Translator") || User.IsInRole("Administrator"))
-        {
-            <!-- Кнопка для додавання розділу -->
-            <a href="@Url.Action("CreateChapter", "Mangas", new { mangaId = Model.Manga.Id })" class="btn btn-success">
-                @Localizer["AddChapter"]
-            </a>
-        }
-
         <!-- Блок коментарів -->
-        <div class="comments-section">
+        @*<div class="comments-section">
             <h3>@Localizer["Comments"]:</h3>
 
             <!-- Відображення повідомлень про помилки чи успіх -->
@@ -130,7 +75,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <form asp-action="AddComment" method="post">
-                        <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
+                        <input type="hidden" name="newsId" value="@Model.Id" />
                         <textarea name="content" required placeholder="@Localizer["WriteYourComment"]" class="form-control"></textarea>
                         <button type="submit" class="btn btn-success">@Localizer["AddComment"]</button>
                     </form>
@@ -141,7 +86,7 @@
                 }
             </div>
             <div class="comments-list">
-                @foreach (var comment in Model.Manga.Comments.OrderByDescending(c => c.CreatedAt))
+                @foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
                 {
                     <div class="comment">
                         <p><strong>@comment.UserName</strong> @comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
@@ -152,14 +97,14 @@
                             <form asp-action="DeleteComment" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей коментар?');">
                                 <form asp-action="DeleteComment" method="post" style="display:inline;">
                                     <input type="hidden" name="commentId" value="@comment.Id" />
-                                    <input type="hidden" name="mangaId" value="@Model.Manga.Id" />
+                                    <input type="hidden" name="newsId" value="@Model.Id" />
                                     <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
                                 </form>
                             </form>
                         }
                     </div>
                 }
-            </div>
+            </div>*@
         </div>
         <!-- JavaScript для перевірки коментаря -->
         <script>

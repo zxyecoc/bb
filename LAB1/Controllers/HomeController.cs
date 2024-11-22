@@ -12,11 +12,11 @@ namespace LAB1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly LAB1Context _context;
+        private readonly NewsBlogContext _context;
         private readonly IStringLocalizer<HomeController> _localizer;
 
         // Об'єднаний конструктор
-        public HomeController(ILogger<HomeController> logger, LAB1Context context, IStringLocalizer<HomeController> localizer)
+        public HomeController(ILogger<HomeController> logger, NewsBlogContext context, IStringLocalizer<HomeController> localizer)
         {
             _logger = logger;
             _context = context;
@@ -34,41 +34,45 @@ namespace LAB1.Controllers
             return LocalRedirect(returnUrl);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? authorId, string sortOrder, List<int> selectedTags, double? minRating)
         {
+            var newses = _context.News
+                .Include(m => m.Author)
+                .Include(m => m.Tags)
+                .AsQueryable();
 
-            // Отримуємо 5 манг з останніми розділами
-            var recentMangas = await _context.Chapters
-                .Include(c => c.Manga) // Включаємо мангу
-                .OrderByDescending(c => c.UpdatedAt) // Сортуємо по часу оновлення
-                .GroupBy(c => c.MangaId) // Групуємо по MangaId, щоб отримати останні манги
-                .Take(5) // Лімітуємо до 5 манг
-                .Select(g => g.OrderByDescending(c => c.UpdatedAt).FirstOrDefault()) // Для кожної манги беремо останній розділ
-                .ToListAsync();
-
-            // Отримуємо 5 манг з найбільшими середніми рейтингами
-            var topRatedMangas = await _context.Manga
-                .Where(m => m.AverageRating.HasValue) // Перевіряємо, що рейтинг існує
-                .OrderByDescending(m => m.AverageRating) // Сортуємо за рейтингом від найбільшого
-                .Take(5) // Лімітуємо до 5 манг
-                .ToListAsync();
-
-            // Якщо немає манг з новими розділами, створюємо порожній список
-            if (recentMangas == null || !recentMangas.Any())
+            // Фільтрація за автором
+            if (authorId.HasValue)
             {
-                recentMangas = new List<Chapter>();
+                newses = newses.Where(m => m.AuthorId == authorId.Value);
             }
 
-            // Якщо немає манг з рейтингами, створюємо порожній список
-            if (topRatedMangas == null || !topRatedMangas.Any())
+            // Фільтрація за тегами
+            if (selectedTags != null && selectedTags.Any())
             {
-                topRatedMangas = new List<Manga>();
+                newses = newses.Where(m => m.Tags.Any(t => selectedTags.Contains(t.Id)));
             }
 
-            ViewData["RecentChapters"] = recentMangas;
-            ViewData["TopRatedMangas"] = topRatedMangas;
+            //// Фільтрація за рейтингом
+            //if (minRating.HasValue)
+            //{
+            //    mangas = mangas.Where(m => m.AverageRating >= minRating.Value);
+            //}
 
-            return View();
+            // Сортування
+            newses = sortOrder switch
+            {
+                "title" => newses.OrderBy(m => m.Title),
+                "year" => newses.OrderByDescending(m => m.CreatedAt),
+                //"rating" => mangas.OrderByDescending(m => m.AverageRating),
+                _ => newses.OrderBy(m => m.Title),
+            };
+
+            // Передаємо списки тегів, авторів та ілюстраторів у ViewBag
+            ViewBag.Tags = await _context.Tags.ToListAsync();
+            ViewBag.Authors = await _context.Authors.ToListAsync();
+
+            return View(await newses.ToListAsync());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

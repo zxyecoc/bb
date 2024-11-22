@@ -15,9 +15,9 @@ namespace LAB1.Models
         public User user { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Дата і час створення коментаря
 
-        public Manga Manga { get; set; }
+        public News News { get; set; }
         [Required]
-        public int MangaId { get; set; } // Зв'язок з мангою 
+        public int NewsId { get; set; } // Зв'язок з мангою 
     }
 
 }

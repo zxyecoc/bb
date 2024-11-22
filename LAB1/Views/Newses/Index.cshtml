@@ -1,26 +1,21 @@
-﻿@model IEnumerable<LAB1.Models.Manga>
+﻿@model IEnumerable<LAB1.Models.News>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Список манґ</h1>
+<h1>Список новин</h1>
 
 <p>
-    <a asp-action="Create">Додати нову манґу</a>
+    <a asp-action="Create">Додати нову новину</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th></th> <!-- Колонка для зображення -->
             <th>@Html.DisplayNameFor(model => model.Title)</th>
-            <th>@Html.DisplayNameFor(model => model.ReleaseYear)</th>
             <th>Tags</th>
             <th>Author</th> 
-            <th>Illustrator</th>
-            <th>@Html.DisplayNameFor(model => model.Volumes)</th>
-            <th>@Html.DisplayNameFor(model => model.Chapters)</th>
-            <th>Status</th>
             <th></th>
         </tr>
     </thead>
@@ -32,7 +27,6 @@
                     <img src="@item.CoverUrl" alt="Cover" style="width: 50px; height: auto;" /> <!-- Маленьке зображення -->
                 </td>
                 <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                <td>@Html.DisplayFor(modelItem => item.ReleaseYear)</td>
                 <td>
                     @foreach (var tag in item.Tags)
                     {
@@ -40,10 +34,6 @@
                     }
                 </td>
                 <td>@Html.DisplayFor(modelItem => item.Author.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Illustrator.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Volumes)</td>
-                <td>@Html.DisplayFor(modelItem => item.Chapters)</td>
-                <td>@(item.Status ? "Завершено" : "Продовжується")</td>
                 <td>
                     <div class="btn-group" role="group">
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏️ Редагувати</a>

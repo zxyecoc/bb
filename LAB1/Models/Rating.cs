@@ -9,9 +9,9 @@ namespace LAB1.Models
 
         public string UserName { get; set; }  // Замість UserId зберігаємо UserName
 
-        public Manga Manga { get; set; }
+        public News News { get; set; }
         [Required]
-        public int MangaId { get; set; } // Ідентифікатор манги
+        public int NewsId { get; set; } // Ідентифікатор манги
 
         [Range(1, 10)]
         public int UserRating { get; set; } // Оцінка користувача (1-10)

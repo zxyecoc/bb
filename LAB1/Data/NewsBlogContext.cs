@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace LAB1.Data
 {
-    public class LAB1Context : IdentityDbContext<User>
+    public class NewsBlogContext : IdentityDbContext<User>
     {
-        public LAB1Context(DbContextOptions<LAB1Context> options)
+        public NewsBlogContext(DbContextOptions<NewsBlogContext> options)
             : base(options)
         {
         }
 
-        public DbSet<Manga> Manga { get; set; } = default!;
+        public DbSet<News> News { get; set; } = default!;
 
         // Зміна назви Author на Authors
         public DbSet<Author> Authors { get; set; } = default!;
@@ -24,8 +24,6 @@ namespace LAB1.Data
         public DbSet<Comment> Comments { get; set; } = default!;
         public DbSet<Rating> Ratings { get; set; } = default!;
         public DbSet<Bookmark> Bookmarks { get; set; }
-        public DbSet<Chapter> Chapters { get; set; }
-        public DbSet<Page> Pages { get; set; }
 
 
 
@@ -34,23 +32,16 @@ namespace LAB1.Data
             base.OnModelCreating(modelBuilder);
 
             // Налаштування зв'язку для автора
-            modelBuilder.Entity<Manga>()
+            modelBuilder.Entity<News>()
                 .HasOne(m => m.Author)
                 .WithMany()
                 .HasForeignKey(m => m.AuthorId)
                 .OnDelete(DeleteBehavior.Cascade); // Використовуємо каскад для автора
 
-            // Налаштування зв'язку для ілюстратора
-            modelBuilder.Entity<Manga>()
-                .HasOne(m => m.Illustrator)
-                .WithMany()
-                .HasForeignKey(m => m.IllustratorId)
-                .OnDelete(DeleteBehavior.Restrict); // Використовуємо обмеження для ілюстратора
-
-            modelBuilder.Entity<Manga>()
+            modelBuilder.Entity<News>()
             .HasMany(m => m.Tags)
-            .WithMany(t => t.Mangas)
-            .UsingEntity(j => j.ToTable("MangaTags")); // Створення зв'язуючої таблиці
+            .WithMany(t => t.News)
+            .UsingEntity(j => j.ToTable("NewsTags")); // Створення зв'язуючої таблиці
         }
 
     }
