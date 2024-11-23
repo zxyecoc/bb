@@ -22,9 +22,10 @@ namespace LAB1.Data
         // Зміна назви Tag на Tags
         public DbSet<Tag> Tags { get; set; } = default!;
         public DbSet<Comment> Comments { get; set; } = default!;
-        public DbSet<Rating> Ratings { get; set; } = default!;
-        public DbSet<Bookmark> Bookmarks { get; set; }
-
+        public DbSet<Likes> Ratings { get; set; } = default!;
+        public DbSet<League> Leagues { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<LeagueTeam> LeagueTeams { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,6 +43,20 @@ namespace LAB1.Data
             .HasMany(m => m.Tags)
             .WithMany(t => t.News)
             .UsingEntity(j => j.ToTable("NewsTags")); // Створення зв'язуючої таблиці
+
+            // Налаштування зв'язку багато до багатьох
+            modelBuilder.Entity<LeagueTeam>()
+                .HasKey(lt => new { lt.LeagueId, lt.TeamId }); // Composite primary key
+
+            modelBuilder.Entity<LeagueTeam>()
+                .HasOne(lt => lt.League)
+                .WithMany(l => l.LeagueTeams)
+                .HasForeignKey(lt => lt.LeagueId);
+
+            modelBuilder.Entity<LeagueTeam>()
+                .HasOne(lt => lt.Team)
+                .WithMany(t => t.LeagueTeams)
+                .HasForeignKey(lt => lt.TeamId);
         }
 
     }

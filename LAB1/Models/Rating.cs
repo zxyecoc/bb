@@ -2,20 +2,18 @@
 
 namespace LAB1.Models
 {
-    public class Rating
+    public class Likes
     {
         [Key]
-        public int Id { get; set; } // Унікальний ідентифікатор оцінки
+        public int Id { get; set; } // Унікальний ідентифікатор лайка
 
-        public string UserName { get; set; }  // Замість UserId зберігаємо UserName
-
-        public News News { get; set; }
         [Required]
-        public int NewsId { get; set; } // Ідентифікатор манги
+        public string UserName { get; set; }  // Ім'я користувача, який поставив лайк
 
-        [Range(1, 10)]
-        public int UserRating { get; set; } // Оцінка користувача (1-10)
-        public DateTime CreatedAt { get; set; }
+        [Required]
+        public int NewsId { get; set; } // Ідентифікатор новини
+
+        public News News { get; set; } // Навігаційна властивість до новини
 
     }
 }

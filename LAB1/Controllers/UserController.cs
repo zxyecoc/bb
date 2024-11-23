@@ -117,49 +117,14 @@ public class UserController : Controller
         {
             roles = new List<string> { "Читач" };
         }
-
-        // Отримуємо закладки користувача
-        var bookmarks = await _context.Bookmarks
-            .Where(b => b.UserId == user.Id)
-            .Include(b => b.News)
-            .ToListAsync();
-        if (bookmarks == null)
-        {
-            return NotFound();
-        }    
         var model = new UserProfileViewModel
         {
             UserName = user.UserName,
             Email = user.Email,
             Roles = string.Join(", ", roles.Select(role => RoleTranslations.ResourceManager.GetString(role) ?? role)),
-            Bookmarks = bookmarks // Передаємо закладки до представлення
         };
 
 
         return View(model);
     }
-
-    [HttpPost]
-    public async Task<IActionResult> RemoveBookmark(int bookmarkId)
-    {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return NotFound("Користувача не знайдено");
-        }
-
-        var bookmark = await _context.Bookmarks
-            .FirstOrDefaultAsync(b => b.Id == bookmarkId && b.UserId == user.Id);
-
-        if (bookmark == null)
-        {
-            return NotFound("Закладку не знайдено");
-        }
-
-        _context.Bookmarks.Remove(bookmark);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction("Profile", "User"); // Після видалення перенаправляємо на профіль
-    }
-
 }

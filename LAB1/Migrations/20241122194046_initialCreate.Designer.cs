@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LAB1.Migrations
 {
     [DbContext(typeof(NewsBlogContext))]
-    [Migration("20241122094901_initialCreate")]
+    [Migration("20241122194046_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />
@@ -50,7 +50,7 @@ namespace LAB1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MangaId")
+                    b.Property<int>("NewsId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -59,7 +59,7 @@ namespace LAB1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MangaId");
+                    b.HasIndex("NewsId");
 
                     b.HasIndex("UserId");
 
@@ -81,7 +81,7 @@ namespace LAB1.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MangaId")
+                    b.Property<int>("NewsId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
@@ -93,11 +93,33 @@ namespace LAB1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MangaId");
+                    b.HasIndex("NewsId");
 
                     b.HasIndex("userId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("LAB1.Models.Likes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("NewsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewsId");
+
+                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("LAB1.Models.News", b =>
@@ -131,34 +153,6 @@ namespace LAB1.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("News");
-                });
-
-            modelBuilder.Entity("LAB1.Models.Rating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MangaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserRating")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MangaId");
-
-                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("LAB1.Models.Tag", b =>
@@ -378,13 +372,13 @@ namespace LAB1.Migrations
 
             modelBuilder.Entity("NewsTag", b =>
                 {
-                    b.Property<int>("MangasId")
+                    b.Property<int>("NewsId")
                         .HasColumnType("int");
 
                     b.Property<int>("TagsId")
                         .HasColumnType("int");
 
-                    b.HasKey("MangasId", "TagsId");
+                    b.HasKey("NewsId", "TagsId");
 
                     b.HasIndex("TagsId");
 
@@ -393,9 +387,9 @@ namespace LAB1.Migrations
 
             modelBuilder.Entity("LAB1.Models.Bookmark", b =>
                 {
-                    b.HasOne("LAB1.Models.News", "Manga")
+                    b.HasOne("LAB1.Models.News", "News")
                         .WithMany()
-                        .HasForeignKey("MangaId")
+                        .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -405,16 +399,16 @@ namespace LAB1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Manga");
+                    b.Navigation("News");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("LAB1.Models.Comment", b =>
                 {
-                    b.HasOne("LAB1.Models.News", "Manga")
+                    b.HasOne("LAB1.Models.News", "News")
                         .WithMany("Comments")
-                        .HasForeignKey("MangaId")
+                        .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -422,9 +416,20 @@ namespace LAB1.Migrations
                         .WithMany()
                         .HasForeignKey("userId");
 
-                    b.Navigation("Manga");
+                    b.Navigation("News");
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("LAB1.Models.Likes", b =>
+                {
+                    b.HasOne("LAB1.Models.News", "News")
+                        .WithMany("Likes")
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("News");
                 });
 
             modelBuilder.Entity("LAB1.Models.News", b =>
@@ -436,17 +441,6 @@ namespace LAB1.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
-                });
-
-            modelBuilder.Entity("LAB1.Models.Rating", b =>
-                {
-                    b.HasOne("LAB1.Models.News", "Manga")
-                        .WithMany("Ratings")
-                        .HasForeignKey("MangaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manga");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -504,7 +498,7 @@ namespace LAB1.Migrations
                 {
                     b.HasOne("LAB1.Models.News", null)
                         .WithMany()
-                        .HasForeignKey("MangasId")
+                        .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -519,7 +513,7 @@ namespace LAB1.Migrations
                 {
                     b.Navigation("Comments");
 
-                    b.Navigation("Ratings");
+                    b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618
         }

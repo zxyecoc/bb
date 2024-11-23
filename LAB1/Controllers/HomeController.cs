@@ -34,45 +34,43 @@ namespace LAB1.Controllers
             return LocalRedirect(returnUrl);
         }
 
-        public async Task<IActionResult> Index(int? authorId, string sortOrder, List<int> selectedTags, double? minRating)
+        public async Task<IActionResult> Index(int? tagId, int? authorId, string sortOrder)
         {
-            var newses = _context.News
-                .Include(m => m.Author)
-                .Include(m => m.Tags)
+            // Отримання всіх новин
+            var newsQuery = _context.News
+                .Include(n => n.Tags)
+                .Include(n => n.Author)
                 .AsQueryable();
+
+            // Фільтрація за тегом
+            if (tagId.HasValue)
+            {
+                newsQuery = newsQuery.Where(n => n.Tags.Any(t => t.Id == tagId));
+            }
 
             // Фільтрація за автором
             if (authorId.HasValue)
             {
-                newses = newses.Where(m => m.AuthorId == authorId.Value);
+                newsQuery = newsQuery.Where(n => n.AuthorId == authorId);
             }
-
-            // Фільтрація за тегами
-            if (selectedTags != null && selectedTags.Any())
-            {
-                newses = newses.Where(m => m.Tags.Any(t => selectedTags.Contains(t.Id)));
-            }
-
-            //// Фільтрація за рейтингом
-            //if (minRating.HasValue)
-            //{
-            //    mangas = mangas.Where(m => m.AverageRating >= minRating.Value);
-            //}
 
             // Сортування
-            newses = sortOrder switch
+            newsQuery = sortOrder switch
             {
-                "title" => newses.OrderBy(m => m.Title),
-                "year" => newses.OrderByDescending(m => m.CreatedAt),
-                //"rating" => mangas.OrderByDescending(m => m.AverageRating),
-                _ => newses.OrderBy(m => m.Title),
+                "title" => newsQuery.OrderBy(n => n.Title),
+                "year" => newsQuery.OrderBy(n => n.CreatedAt.Year),
+                "chapters" => newsQuery.OrderByDescending(n => n.Comments.Count), // наприклад, кількість коментарів
+                _ => newsQuery.OrderByDescending(n => n.CreatedAt), // за замовчуванням сортування за датою створення
             };
 
-            // Передаємо списки тегів, авторів та ілюстраторів у ViewBag
+            // Передача списку новин у представлення
+            var newsList = await newsQuery.ToListAsync();
+
+            // Передача даних для фільтрів
             ViewBag.Tags = await _context.Tags.ToListAsync();
             ViewBag.Authors = await _context.Authors.ToListAsync();
 
-            return View(await newses.ToListAsync());
+            return View(newsList);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

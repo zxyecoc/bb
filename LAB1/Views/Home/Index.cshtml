@@ -57,36 +57,36 @@ else
     <div class="filter-panel">
         <h3>@Localizer["Filtration"]</h3>
         <form asp-action="Index" method="get">
-            <!-- Фільтр за тегами -->
             <div class="form-group">
                 <label>@Localizer["Tags"]:</label><br />
-                @if (ViewBag.Tags != null)
-                {
-                    @foreach (var tag in ViewBag.Tags as List<LAB1.Models.Tag>)
+                <select name="tagId" class="form-control">
+                    <option value="">@Localizer["AllTags"]</option>
+                    @if (ViewBag.Tags != null)
                     {
-                        <div class="form-check">
-                            <input type="checkbox" name="selectedTags" value="@tag.Id" class="form-check-input" />
-                            <label class="form-check-label">@tag.Name</label>
-                        </div>
+                        foreach (var tag in ViewBag.Tags as List<LAB1.Models.Tag>)
+                        {
+                            <option value="@tag.Id">@tag.Name</option>
+                        }
                     }
-                }
-                else
-                {
-                    <p>@Localizer["NoTags"]</p>
-                }
+                </select>
             </div>
+
 
             <!-- Фільтр за автором -->
             <div class="form-group">
                 <label>@Localizer["Author"]:</label>
                 <select name="authorId" class="form-control">
-                    <option value="">@Localizer["AllAuthor"]</option>
-                    @foreach (var author in ViewBag.Authors as List<LAB1.Models.Author>)
+                    <option value="">@Localizer["AllAuthors"]</option>
+                    @if (ViewBag.Authors != null)
                     {
-                        <option value="@author.Id">@author.Name</option>
+                        foreach (var author in ViewBag.Authors as List<LAB1.Models.Author>)
+                        {
+                            <option value="@author.Id">@author.Name</option>
+                        }
                     }
                 </select>
             </div>
+
 
 
             <!-- Сортування -->
@@ -95,9 +95,8 @@ else
                 <label>@Localizer["SortBy"]:</label>
                 <select name="sortOrder" class="form-control">
                     <option value="title">@Localizer["Title"]</option>
-                    <option value="year">@Localizer["ReleaseYear"]</option>
                     <option value="rating">@Localizer["Rating"]</option>
-                    <option value="chapters">@Localizer["ChapterNumber"]</option>
+                    <option value="createdAt">@Localizer["NewestFirst"]</option>
                 </select>
             </div>
 

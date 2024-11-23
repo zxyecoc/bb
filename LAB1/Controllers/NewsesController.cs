@@ -230,7 +230,7 @@ namespace LAB1.Controllers
             var news = await _context.News
                 .Include(a => a.Author)
                 .Include(t => t.Tags)
-                .Include(m => m.Ratings)
+                .Include(m => m.Likes)
                 .Include(m => m.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -239,12 +239,8 @@ namespace LAB1.Controllers
                 return NotFound();
             }
 
-            //double averageRating = manga.Ratings.Any() ? manga.Ratings.Average(r => r.UserRating) : 5;
-            //manga.AverageRating = averageRating;
-
-            return View(); 
+            return View(news); // Pass the news object to the view
         }
-
 
         [HttpPost]
         public async Task<IActionResult> AddComment(int newsId, string content)
@@ -302,121 +298,55 @@ namespace LAB1.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddRating(int newsId, int ratingValue)
+        public async Task<IActionResult> AddLike(int newsId)
         {
-            var userName = User.Identity.Name;
-            if (string.IsNullOrEmpty(userName))
+            var userName = User.Identity?.Name;
+
+            if (userName == null)
             {
                 return Unauthorized(); // Якщо користувач не авторизований
             }
 
-            // Перевірка, чи вже існує рейтинг для цієї манги від цього користувача
-            var existingRating = await _context.Ratings
-                .FirstOrDefaultAsync(r => r.NewsId == newsId && r.UserName == userName);
+            var existingLike = await _context.Ratings
+                .FirstOrDefaultAsync(l => l.NewsId == newsId && l.UserName == userName);
 
-            if (existingRating != null)
+            if (existingLike == null)
             {
-                // Оновлюємо рейтинг, якщо він уже є
-                existingRating.UserRating = ratingValue;
-                existingRating.CreatedAt = DateTime.Now;
-                _context.Ratings.Update(existingRating); // Оновлюємо рейтинг у базі
-            }
-            else
-            {
-                // Якщо рейтингу ще немає, додаємо новий
-                var newRating = new Rating
+                var like = new Likes
                 {
                     NewsId = newsId,
-                    UserName = userName,
-                    UserRating = ratingValue,
-                    CreatedAt = DateTime.Now
-                };
-                _context.Ratings.Add(newRating); // Додаємо новий рейтинг
-            }
-
-            await _context.SaveChangesAsync(); // Зберігаємо зміни в базі даних
-
-            // Обчислення середнього рейтингу
-            var news = await _context.News
-                .Include(m => m.Ratings) // Завантажуємо всі рейтинги цієї манги
-                .FirstOrDefaultAsync(m => m.Id == newsId);
-
-            double averageRating = 5; // За замовчуванням середній рейтинг = 5
-
-            if (news != null && news.Ratings.Any())
-            {
-                averageRating = news.Ratings.Average(r => r.UserRating); // Обчислення середнього рейтингу
-            }
-
-            //// Оновлюємо середній рейтинг у манги
-            //if (manga != null)
-            //{
-            //    manga.AverageRating = averageRating;
-            //    _context.Manga.Update(manga); // Оновлюємо мангу в базі даних
-            //}
-
-            await _context.SaveChangesAsync(); // Зберігаємо зміни
-
-            return RedirectToAction("NewsPage", new { id = newsId }); // Перенаправляємо на сторінку з деталями манги
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddBookmark(int newsId)
-        {
-            // Отримуємо поточного користувача
-            var user = await _userManager.GetUserAsync(User);
-
-            // Перевірка на існування манги
-            var news = await _context.News.FirstOrDefaultAsync(m => m.Id == newsId);
-            if (news == null)
-            {
-                return NotFound();
-            }
-
-            // Перевірка, чи вже є закладка для цього користувача
-            var existingBookmark = await _context.Bookmarks
-                .FirstOrDefaultAsync(b => b.UserId == user.Id && b.NewsId == newsId);
-
-            if (existingBookmark == null)
-            {
-                // Створюємо нову закладку
-                var bookmark = new Bookmark
-                {
-                    UserId = user.Id,
-                    NewsId = newsId
+                    UserName = userName
                 };
 
-                _context.Bookmarks.Add(bookmark);
+                _context.Ratings.Add(like);
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("Profile", "User"); // Перенаправлення на сторінку користувача
+            return RedirectToAction("NewsPage", new { id = newsId });
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveBookmark(int newsId)
+        public async Task<IActionResult> RemoveLike(int newsId)
         {
-            // Отримуємо поточного користувача
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var userName = User.Identity?.Name;
+
+            if (userName == null)
             {
                 return Unauthorized(); // Якщо користувач не авторизований
             }
 
-            // Знаходимо закладку для видалення
-            var bookmark = await _context.Bookmarks
-                .FirstOrDefaultAsync(b => b.NewsId == newsId && b.UserId == user.Id);
+            var existingLike = await _context.Ratings
+                .FirstOrDefaultAsync(l => l.NewsId == newsId && l.UserName == userName);
 
-            if (bookmark != null)
+            if (existingLike != null)
             {
-                // Видаляємо закладку
-                _context.Bookmarks.Remove(bookmark);
+                _context.Ratings.Remove(existingLike);
                 await _context.SaveChangesAsync();
             }
 
-            // Перенаправляємо користувача назад на сторінку манги
-            return RedirectToAction("Newspage", new { id = newsId });
+            return RedirectToAction("NewsPage", new { id = newsId });
         }
+
         public async Task<IActionResult> Search(string searchQuery)
         {
             if (string.IsNullOrWhiteSpace(searchQuery))

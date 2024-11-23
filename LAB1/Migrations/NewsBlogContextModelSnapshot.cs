@@ -39,30 +39,6 @@ namespace LAB1.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Bookmark", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MangaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MangaId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Bookmarks");
-                });
-
             modelBuilder.Entity("LAB1.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -78,7 +54,7 @@ namespace LAB1.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MangaId")
+                    b.Property<int>("NewsId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
@@ -90,11 +66,65 @@ namespace LAB1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MangaId");
+                    b.HasIndex("NewsId");
 
                     b.HasIndex("userId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("LAB1.Models.League", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Leagues");
+                });
+
+            modelBuilder.Entity("LAB1.Models.LeagueTeam", b =>
+                {
+                    b.Property<int>("LeagueId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LeagueId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("LeagueTeams");
+                });
+
+            modelBuilder.Entity("LAB1.Models.Likes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("NewsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewsId");
+
+                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("LAB1.Models.News", b =>
@@ -130,34 +160,6 @@ namespace LAB1.Migrations
                     b.ToTable("News");
                 });
 
-            modelBuilder.Entity("LAB1.Models.Rating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MangaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserRating")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MangaId");
-
-                    b.ToTable("Ratings");
-                });
-
             modelBuilder.Entity("LAB1.Models.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -173,6 +175,23 @@ namespace LAB1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("LAB1.Models.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("LAB1.Models.User", b =>
@@ -375,43 +394,24 @@ namespace LAB1.Migrations
 
             modelBuilder.Entity("NewsTag", b =>
                 {
-                    b.Property<int>("MangasId")
+                    b.Property<int>("NewsId")
                         .HasColumnType("int");
 
                     b.Property<int>("TagsId")
                         .HasColumnType("int");
 
-                    b.HasKey("MangasId", "TagsId");
+                    b.HasKey("NewsId", "TagsId");
 
                     b.HasIndex("TagsId");
 
                     b.ToTable("NewsTags", (string)null);
                 });
 
-            modelBuilder.Entity("LAB1.Models.Bookmark", b =>
-                {
-                    b.HasOne("LAB1.Models.News", "Manga")
-                        .WithMany()
-                        .HasForeignKey("MangaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LAB1.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manga");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LAB1.Models.Comment", b =>
                 {
-                    b.HasOne("LAB1.Models.News", "Manga")
+                    b.HasOne("LAB1.Models.News", "News")
                         .WithMany("Comments")
-                        .HasForeignKey("MangaId")
+                        .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -419,9 +419,39 @@ namespace LAB1.Migrations
                         .WithMany()
                         .HasForeignKey("userId");
 
-                    b.Navigation("Manga");
+                    b.Navigation("News");
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("LAB1.Models.LeagueTeam", b =>
+                {
+                    b.HasOne("LAB1.Models.League", "League")
+                        .WithMany("LeagueTeams")
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LAB1.Models.Team", "Team")
+                        .WithMany("LeagueTeams")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("LAB1.Models.Likes", b =>
+                {
+                    b.HasOne("LAB1.Models.News", "News")
+                        .WithMany("Likes")
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("News");
                 });
 
             modelBuilder.Entity("LAB1.Models.News", b =>
@@ -433,17 +463,6 @@ namespace LAB1.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
-                });
-
-            modelBuilder.Entity("LAB1.Models.Rating", b =>
-                {
-                    b.HasOne("LAB1.Models.News", "Manga")
-                        .WithMany("Ratings")
-                        .HasForeignKey("MangaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manga");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -501,7 +520,7 @@ namespace LAB1.Migrations
                 {
                     b.HasOne("LAB1.Models.News", null)
                         .WithMany()
-                        .HasForeignKey("MangasId")
+                        .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -512,11 +531,21 @@ namespace LAB1.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("LAB1.Models.League", b =>
+                {
+                    b.Navigation("LeagueTeams");
+                });
+
             modelBuilder.Entity("LAB1.Models.News", b =>
                 {
                     b.Navigation("Comments");
 
-                    b.Navigation("Ratings");
+                    b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("LAB1.Models.Team", b =>
+                {
+                    b.Navigation("LeagueTeams");
                 });
 #pragma warning restore 612, 618
         }

@@ -20,11 +20,13 @@ namespace LAB1.Models
         public string CoverUrl { get; set; } 
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
         [NotMapped]
-        [ValidateNever] public Rating Rating { get; set; }
-        public ICollection<Rating>? Ratings { get; set; } 
-        public ICollection<Tag> Tags { get; set; } = new List<Tag>(); 
+        public int LikeCount { get; set; } // Кількість лайків
+
+        public ICollection<Likes> Likes { get; set; } = new List<Likes>(); 
+
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
