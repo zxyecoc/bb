@@ -101,7 +101,7 @@ public class UserController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    [Authorize]
+    // Профіль користувача
     public async Task<IActionResult> Profile()
     {
         var user = await _userManager.GetUserAsync(User);
@@ -110,21 +110,73 @@ public class UserController : Controller
             return NotFound("Користувача не знайдено");
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var favoriteTeams = await _context.UserFavoriteTeams
+            .Where(uf => uf.UserId == user.Id)
+            .Select(uf => uf.Team)
+            .ToListAsync();
 
-        // Якщо немає жодної ролі, встановлюємо "Читач"
-        if (roles == null || roles.Count == 0)
-        {
-            roles = new List<string> { "Читач" };
-        }
         var model = new UserProfileViewModel
         {
             UserName = user.UserName,
             Email = user.Email,
-            Roles = string.Join(", ", roles.Select(role => RoleTranslations.ResourceManager.GetString(role) ?? role)),
+            FavoriteTeams = favoriteTeams
         };
 
-
         return View(model);
+    }
+
+
+    // Додавання улюбленої команди
+    [HttpGet]
+    public async Task<IActionResult> AddFavoriteTeam()
+    {
+        var teams = await _context.Teams.ToListAsync(); // Завантажуємо список команд
+        var model = new FavoriteTeamViewModel
+        {
+            Teams = teams, // Ініціалізація списку команд
+            SelectedTeamIds = new List<int>() // Ініціалізуємо пустий список вибраних команд
+        };
+
+        return View(model); // Передаємо модель в представлення
+    }
+
+    // Обробка вибору улюбленої команди
+    [HttpPost]
+    public async Task<IActionResult> AddFavoriteTeam(FavoriteTeamViewModel model)
+    {
+        if (model.SelectedTeamIds == null || !model.SelectedTeamIds.Any())
+        {
+            ModelState.AddModelError("", "Ви повинні обрати хоча б одну команду.");
+            model.Teams = await _context.Teams.ToListAsync(); // Повторно завантажуємо список команд
+            return View(model);
+        }
+
+        var user = await _userManager.GetUserAsync(User); // Отримуємо поточного користувача
+        if (user == null)
+        {
+            return NotFound("Користувача не знайдено");
+        }
+
+        // Видалення старих улюблених команд
+        var existingFavorites = _context.UserFavoriteTeams.Where(uf => uf.UserId == user.Id).ToList();
+        _context.UserFavoriteTeams.RemoveRange(existingFavorites);
+
+        // Додавання нових улюблених команд
+        foreach (var teamId in model.SelectedTeamIds)
+        {
+            var team = await _context.Teams.FindAsync(teamId);
+            if (team != null)
+            {
+                var userFavoriteTeam = new UserFavoriteTeam
+                {
+                    UserId = user.Id,
+                    TeamId = team.Id
+                };
+                _context.UserFavoriteTeams.Add(userFavoriteTeam);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction("Profile");
     }
 }

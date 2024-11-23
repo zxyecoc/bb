@@ -4,6 +4,7 @@ using LAB1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LAB1.Migrations
 {
     [DbContext(typeof(NewsBlogContext))]
-    partial class NewsBlogContextModelSnapshot : ModelSnapshot
+    [Migration("20241123114040_UserFavouriteTeam")]
+    partial class UserFavouriteTeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,7 +127,7 @@ namespace LAB1.Migrations
 
                     b.HasIndex("NewsId");
 
-                    b.ToTable("Likes");
+                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("LAB1.Models.News", b =>

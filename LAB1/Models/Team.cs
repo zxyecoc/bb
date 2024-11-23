@@ -7,5 +7,6 @@
 
         // Зв'язок багато до багатьох
         public ICollection<LeagueTeam> LeagueTeams { get; set; } = new List<LeagueTeam>();
+        public ICollection<UserFavoriteTeam> UserFavoriteTeams { get; set; } = new List<UserFavoriteTeam>();
     }
 }

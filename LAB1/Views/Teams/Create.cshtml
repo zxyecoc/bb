@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Create Team</h1>
 
 <h4>Team</h4>
 <hr />
@@ -12,11 +12,26 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Поле для назви команди -->
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
+            <!-- Чекбокси для ліг -->
+            <div class="form-group">
+                <label class="control-label">Leagues</label>
+                @foreach (var league in ViewBag.Leagues as List<LAB1.Models.League>)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedLeagues" value="@league.Id" />
+                        <label class="form-check-label">@league.Name</label>
+                    </div>
+                }
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -29,5 +44,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

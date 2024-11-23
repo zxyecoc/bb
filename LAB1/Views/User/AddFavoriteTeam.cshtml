@@ -1,0 +1,14 @@
+﻿@model FavoriteTeamViewModel
+
+<h2>Вибір улюблених команд</h2>
+
+<form asp-action="AddFavoriteTeam" method="post">
+    @foreach (var team in Model.Teams)
+    {
+        <div>
+            <input type="checkbox" name="SelectedTeamIds" value="@team.Id" id="team_@team.Id" />
+            <label for="team_@team.Id">@team.Name</label>
+        </div>
+    }
+    <button type="submit">Зберегти</button>
+</form>

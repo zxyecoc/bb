@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Teams</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -15,21 +15,38 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
+            <th>Leagues</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var team in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => team.Name)
+                </td>
+                <td>
+                    @if (team.LeagueTeams != null && team.LeagueTeams.Any())
+                    {
+                        <ul>
+                            @foreach (var leagueTeam in team.LeagueTeams)
+                            {
+                                <li>@leagueTeam.League.Name</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>No leagues assigned</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@team.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@team.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@team.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -245,22 +245,10 @@ namespace LAB1.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int newsId, string content)
         {
-            // Перевірка на мінімальну та максимальну довжину
             if (string.IsNullOrWhiteSpace(content) || content.Length < 4 || content.Length > 2000)
             {
                 TempData["Error"] = "Коментар має містити від 4 до 2000 символів.";
-                return RedirectToAction("Newspage", "Newses", new { id = newsId });
-            }
-
-            // Перевірка на заборонені слова
-            var bannedWords = new List<string> { "спам", "образа", "ненормативна лексика" };
-            foreach (var word in bannedWords)
-            {
-                if (content.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    TempData["Error"] = "Ваш коментар містить заборонені слова. Будь ласка, виправте текст.";
-                    return RedirectToAction("NewsPage", "Newses", new { id = newsId });
-                }
+                return RedirectToAction("NewsPage", new { id = newsId });
             }
 
             content = System.Net.WebUtility.HtmlEncode(content);
@@ -276,8 +264,7 @@ namespace LAB1.Controllers
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            // Повертаємося на сторінку деталей манги після додавання коментаря
-            return RedirectToAction("NewsPage", "Newses", new { id = newsId });
+            return RedirectToAction("NewsPage", new { id = newsId });
         }
 
         [HttpPost]
@@ -293,7 +280,7 @@ namespace LAB1.Controllers
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("NewsPage", "Newses", new { id = newsId });
+            return RedirectToAction("NewsPage", new { id = newsId });
         }
 
 
@@ -307,7 +294,7 @@ namespace LAB1.Controllers
                 return Unauthorized(); // Якщо користувач не авторизований
             }
 
-            var existingLike = await _context.Ratings
+            var existingLike = await _context.Likes
                 .FirstOrDefaultAsync(l => l.NewsId == newsId && l.UserName == userName);
 
             if (existingLike == null)
@@ -318,7 +305,7 @@ namespace LAB1.Controllers
                     UserName = userName
                 };
 
-                _context.Ratings.Add(like);
+                _context.Likes.Add(like);
                 await _context.SaveChangesAsync();
             }
 
@@ -335,12 +322,12 @@ namespace LAB1.Controllers
                 return Unauthorized(); // Якщо користувач не авторизований
             }
 
-            var existingLike = await _context.Ratings
+            var existingLike = await _context.Likes
                 .FirstOrDefaultAsync(l => l.NewsId == newsId && l.UserName == userName);
 
             if (existingLike != null)
             {
-                _context.Ratings.Remove(existingLike);
+                _context.Likes.Remove(existingLike);
                 await _context.SaveChangesAsync();
             }
 
@@ -365,5 +352,6 @@ namespace LAB1.Controllers
 
             return View("/Views/Home/Index.cshtml", searchResults);
         }
+
     }
 }

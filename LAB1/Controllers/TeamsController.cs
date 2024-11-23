@@ -22,7 +22,12 @@ namespace LAB1.Controllers
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Teams.ToListAsync());
+            var teamsWithLeagues = await _context.Teams
+                .Include(t => t.LeagueTeams)
+                .ThenInclude(lt => lt.League)
+                .ToListAsync();
+
+            return View(teamsWithLeagues);
         }
 
         // GET: Teams/Details/5
@@ -34,7 +39,10 @@ namespace LAB1.Controllers
             }
 
             var team = await _context.Teams
+                .Include(t => t.LeagueTeams)
+                .ThenInclude(lt => lt.League)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (team == null)
             {
                 return NotFound();
@@ -43,27 +51,57 @@ namespace LAB1.Controllers
             return View(team);
         }
 
+
         // GET: Teams/Create
         public IActionResult Create()
         {
+            // Завантажуємо всі ліги
+            ViewBag.Leagues = _context.Leagues.ToList();
             return View();
         }
 
+
         // POST: Teams/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Team team)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Team team, int[] selectedLeagues)
         {
+            // Перевіряємо, чи модель валідна
             if (ModelState.IsValid)
             {
+                // Перевірка: Чи обрано хоча б одну лігу
+                if (selectedLeagues == null || selectedLeagues.Length == 0)
+                {
+                    ModelState.AddModelError("", "Please select at least one league.");
+                    // Знову передаємо ліги до ViewBag, щоб вони відобразилися на сторінці
+                    ViewBag.Leagues = _context.Leagues.ToList();
+                    return View(team);
+                }
+
+                // Додаємо команду до бази даних
                 _context.Add(team);
+                await _context.SaveChangesAsync();
+
+                // Додаємо зв'язки між командою та обраними лігами
+                foreach (var leagueId in selectedLeagues)
+                {
+                    _context.LeagueTeams.Add(new LeagueTeam
+                    {
+                        TeamId = team.Id,
+                        LeagueId = leagueId
+                    });
+                }
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            // Якщо модель не валідна, знову завантажуємо ліги
+            ViewBag.Leagues = _context.Leagues.ToList();
             return View(team);
         }
+
+
 
         // GET: Teams/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -73,20 +111,24 @@ namespace LAB1.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _context.Teams
+                .Include(t => t.LeagueTeams)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
             if (team == null)
             {
                 return NotFound();
             }
+
+            ViewBag.Leagues = _context.Leagues.ToList();
+            ViewBag.SelectedLeagues = team.LeagueTeams.Select(lt => lt.LeagueId).ToList();
             return View(team);
         }
 
-        // POST: Teams/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Team team)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Team team, int[] selectedLeagues)
         {
             if (id != team.Id)
             {
@@ -98,6 +140,21 @@ namespace LAB1.Controllers
                 try
                 {
                     _context.Update(team);
+                    await _context.SaveChangesAsync();
+
+                    // Оновлення зв'язків
+                    var existingLeagueTeams = _context.LeagueTeams.Where(lt => lt.TeamId == team.Id);
+                    _context.LeagueTeams.RemoveRange(existingLeagueTeams);
+
+                    foreach (var leagueId in selectedLeagues)
+                    {
+                        _context.LeagueTeams.Add(new LeagueTeam
+                        {
+                            TeamId = team.Id,
+                            LeagueId = leagueId
+                        });
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -113,8 +170,11 @@ namespace LAB1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Leagues = _context.Leagues.ToList();
             return View(team);
         }
+
 
         // GET: Teams/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -125,7 +185,10 @@ namespace LAB1.Controllers
             }
 
             var team = await _context.Teams
+                .Include(t => t.LeagueTeams)
+                .ThenInclude(lt => lt.League)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (team == null)
             {
                 return NotFound();
@@ -133,6 +196,7 @@ namespace LAB1.Controllers
 
             return View(team);
         }
+
 
         // POST: Teams/Delete/5
         [HttpPost, ActionName("Delete")]

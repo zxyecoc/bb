@@ -9,5 +9,22 @@
 <div>
     <h3>@Localizer["UserName"]: @Model.UserName</h3>
     <p>@Localizer["Email"]: @Model.Email</p>
-    <span>@Localizer["Role"]: @Model.Roles</span>
 </div>
+
+<h3>Улюблені команди:</h3>
+@if (Model.FavoriteTeams.Any())
+{
+    <ul>
+        @foreach (var team in Model.FavoriteTeams)
+        {
+            <li>@team.Name</li>
+        }
+    </ul>
+}
+else
+{
+    <p>Немає обраних команд.</p>
+}
+
+<a asp-action="AddFavoriteTeam">@Localizer["AddFavoriteTeam"]</a>
+

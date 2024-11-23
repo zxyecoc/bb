@@ -54,4 +54,53 @@
             <span>@Localizer["NoTagsAvailable"]</span>
         }
     </div>
+    <div class="comments-section">
+        <h3>Коментарі:</h3>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        <!-- Додавання нового коментаря -->
+        <div class="add-comment-container">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form asp-action="AddComment" method="post">
+                    <input type="hidden" name="newsId" value="@Model.Id" />
+                    <textarea name="content" required placeholder="Напишіть свій коментар" class="form-control"></textarea>
+                    <button type="submit" class="btn btn-success">Додати коментар</button>
+                </form>
+            }
+            else
+            {
+                <p>Тільки авторизовані користувачі можуть писати коментарі.</p>
+            }
+        </div>
+
+        <!-- Список коментарів -->
+        <div class="comments-list">
+            @foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
+            {
+                <div class="comment">
+                    <p><strong>@comment.UserName</strong> @comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p>@comment.Content</p>
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <!-- Видалення коментаря -->
+                        <form asp-action="DeleteComment" method="post" style="display:inline;" onsubmit="return confirm('Ви впевнені, що хочете видалити цей коментар?');">
+                            <input type="hidden" name="commentId" value="@comment.Id" />
+                            <input type="hidden" name="newsId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                        </form>
+                    }
+                </div>
+            }
+        </div>
+    </div>
 </div>
