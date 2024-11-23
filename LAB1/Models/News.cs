@@ -27,7 +27,6 @@ namespace LAB1.Models
 
         public ICollection<Likes> Likes { get; set; } = new List<Likes>(); 
 
-
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
